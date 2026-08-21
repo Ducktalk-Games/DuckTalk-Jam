@@ -20,7 +20,7 @@ jobs:
         uses: OrchidIsle/UE5-Build-Project@latest
         with:
           RUNUAT_PATH: 'D:\Epic Games\Games\UE_5.8\Engine\Build\BatchFiles\RunUAT.bat'
-          UPROJECT_PATH: 'D:\source\repos\DuckTalk-Jam\DuckTalkJam'
+          UPROJECT_PATH: 'D:\source\repos\DuckTalk-Jam\DuckTalkJam\DuckTalkJam.uproject'
           BUILD_CONFIG: Development
           PLATFORM: Win64
           CLEAN: true
