@@ -1,4 +1,4 @@
-name: Build Unreal Engine Project
+name: Build UE Proj (Fraser)
 
 on:
   workflow_dispatch:
