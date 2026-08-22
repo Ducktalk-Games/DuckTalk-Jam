@@ -6,7 +6,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
+
   build:
     runs-on: [self-hosted, Windows, X64, tom-build]
     timeout-minutes: 30
@@ -21,7 +25,7 @@ jobs:
         uses: OrchidIsle/UE5-Build-Project@latest
         with:
           RUNUAT_PATH: 'C:\Program Files\Epic Games\UE_5.8\Engine\Build\BatchFiles\RunUAT.bat'
-          UPROJECT_PATH: 'D:\Game-Jams\DuckTalk-Jam\DuckTalkJam\DuckTalkJam.uproject'
+          UPROJECT_PATH: 'F:\Unreal Projects\DuckTalk-Jam\DuckTalkJam\DuckTalkJam.uproject'
           BUILD_CONFIG: Development
           PLATFORM: Win64
           CLEAN: true
@@ -31,9 +35,48 @@ jobs:
           PAK: true
           SERVER: false
           ARCHIVE: true
-          ARCHIVE_PATH: '${{ github.workspace }}\Build'
+          ARCHIVE_PATH: 'F:\Unreal Projects\DuckTalk-Jam\DuckTalkJam\Build'
           NULLRHI: true
           EDITOR: false
           ENCRYPT_INI: false
           DELETE_PDB: false
           ANTICHEAT_ENABLED: false
+
+      - name: Zip Build
+        shell: powershell
+        run: |
+          $zip = "${{ github.workspace }}\DuckTalkJam-Win64.zip"
+
+          if (Test-Path $zip) {
+              Remove-Item $zip -Force
+          }
+
+          Compress-Archive `
+            -Path "F:\Unreal Projects\DuckTalk-Jam\DuckTalkJam\Build\*" `
+            -DestinationPath $zip
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckTalkJam-Win64
+          path: ${{ github.workspace }}\DuckTalkJam-Win64.zip
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v4
+        with:
+          name: DuckTalkJam-Win64
+          path: release
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: release/DuckTalkJam-Win64.zip
+          generate_release_notes: true

@@ -6,7 +6,11 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
+
   build:
     runs-on: [self-hosted, Windows, X64, fraser-build]
     timeout-minutes: 30
@@ -31,9 +35,48 @@ jobs:
           PAK: true
           SERVER: false
           ARCHIVE: true
-          ARCHIVE_PATH: '${{ github.workspace }}\Build'
+          ARCHIVE_PATH: 'D:\Game-Jams\Builds'
           NULLRHI: true
           EDITOR: false
           ENCRYPT_INI: false
           DELETE_PDB: false
           ANTICHEAT_ENABLED: false
+
+      - name: Zip Build
+        shell: powershell
+        run: |
+          $zip = "${{ github.workspace }}\DuckTalkJam-Win64.zip"
+
+          if (Test-Path $zip) {
+              Remove-Item $zip -Force
+          }
+
+          Compress-Archive `
+            -Path "D:\Game-Jams\Builds\*" `
+            -DestinationPath $zip
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DuckTalkJam-Win64
+          path: ${{ github.workspace }}\DuckTalkJam-Win64.zip
+
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v4
+        with:
+          name: DuckTalkJam-Win64
+          path: release
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Build ${{ github.run_number }}
+          files: release/DuckTalkJam-Win64.zip
+          generate_release_notes: true
