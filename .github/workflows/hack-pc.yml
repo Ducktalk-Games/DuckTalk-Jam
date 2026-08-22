@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, Windows, X64]
+    runs-on: [self-hosted, Windows, X64, ue-build-1]
 
     steps:
       - name: Checkout
