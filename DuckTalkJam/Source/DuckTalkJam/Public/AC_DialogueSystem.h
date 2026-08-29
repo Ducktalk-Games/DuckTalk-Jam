@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
+#include "F_DialogueRow.h"
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
@@ -16,6 +18,60 @@ public:
 	// Sets default values for this component's properties
 	UAC_DialogueSystem();
 
+	UPROPERTY(
+		EditAnywhere,
+		BlueprintReadWrite,
+		Category = "Dialogue",
+		meta = (ToolTip = "The Data Table containing all dialogue rows for this character.")
+	)
+	TObjectPtr<UDataTable> DialogueTable;
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Starts the dialogue from the previously set Dialogue Table. Sets b_IsInDialogue to true.")
+	)
+	void StartDialogue();
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Advances the current dialogue.\nRowName: The Data Table row to load next.")
+	)
+	void AdvanceDialogue(FName RowName);
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Gets the current dialogue node.")
+	)
+	void GetCurrentNode(FF_DialogueRow& OutNode);
+	FF_DialogueRow* CurrentNode;
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Ends the current dialogue. Sets b_IsInDialogue to false.")
+	)
+	void EndDialogue();
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Returns all choices for the node.")
+	)
+	TArray<FF_DialogueChoice> GetChoices();
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Selects a choice to progress the dialogue.")
+	)
+	void SelectChoice(const FF_DialogueChoice& Choice, FName& OutNextRow);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	bool b_IsInDialogue = false;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -23,5 +79,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-		
+
 };
