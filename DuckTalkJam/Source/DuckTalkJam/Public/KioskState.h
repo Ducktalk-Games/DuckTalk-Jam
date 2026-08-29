@@ -25,7 +25,7 @@ public:
 	/*
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<F_Item> Items;
+	TArray<APlayerItem> Items;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<F_Modifier> Modifiers;
