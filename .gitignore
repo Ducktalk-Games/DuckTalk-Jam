@@ -46,10 +46,6 @@
 /DuckTalkJam/SourceArt/**/*.png
 /DuckTalkJam/SourceArt/**/*.tga
 
-# Binary Files
-/DuckTalkJam/Binaries/*
-/DuckTalkJam/Plugins/**/Binaries/*
-
 # Builds
 /DuckTalkJam/Build/*
 
