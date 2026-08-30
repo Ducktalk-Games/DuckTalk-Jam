@@ -19,4 +19,11 @@ struct DUCKTALKJAM_API FF_DialogueChoice
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     FName NextRow;
+   
+    bool IsEmpty() const
+    {
+        return ChoiceText.IsEmpty()
+            && Flag.IsNone()
+            && NextRow.IsNone();
+    }
 };

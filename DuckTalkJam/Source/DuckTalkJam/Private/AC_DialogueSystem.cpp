@@ -50,6 +50,12 @@ void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 {
 	if (!DialogueTable) return;
 
+	if (RowName.IsNone())
+	{
+		EndDialogue();
+		return;
+	}
+
 	FF_DialogueRow* RowToAdvance = DialogueTable->FindRow<FF_DialogueRow>(RowName, TEXT("Dialogue advance lookup"));
 	if (!RowToAdvance)
 	{
@@ -61,6 +67,7 @@ void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 	UE_LOG(LogTemp, Log, TEXT("%s: %s"),
 		*RowToAdvance->Speaker.ToString(),
 		*RowToAdvance->DialogueText.ToString());
+	CurrentNode = RowToAdvance;
 }
 
 void UAC_DialogueSystem::GetCurrentNode(FF_DialogueRow& OutNode)
@@ -75,6 +82,7 @@ void UAC_DialogueSystem::EndDialogue()
 	DialogueTable = nullptr;
 
 	UE_LOG(LogTemp, Log, TEXT("Dialogue ended."));
+	OnDialogueEnded.Broadcast();
 }
 
 TArray<FF_DialogueChoice> UAC_DialogueSystem::GetChoices()
@@ -94,9 +102,19 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		return;
 	}
 
+	// Completely invalid / blank choice
+	if (Choice.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("Selected dialogue choice is empty."));
+		EndDialogue();
+		return;
+	}
+
+	// Valid choice, but deliberately has nowhere to go
 	if (Choice.NextRow.IsNone())
 	{
-		UE_LOG(LogTemp, Error, TEXT("No next node found: dialogue ends or bug?"));
+		UE_LOG(LogTemp, Log,
+			TEXT("Choice has no next row. Ending dialogue."));
 		EndDialogue();
 		return;
 	}
