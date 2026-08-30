@@ -1,0 +1,8 @@
+DuckTalkJam/Plugins/**/Binaries/**/*.dll filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Plugins/**/Binaries/**/*.pdb filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Plugins/**/Binaries/**/*.exe filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Plugins/**/Binaries/**/*.lib filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Binaries/**/*.dll filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Binaries/**/*.pdb filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Binaries/**/*.exe filter=lfs diff=lfs merge=lfs -text
+DuckTalkJam/Binaries/**/*.lib filter=lfs diff=lfs merge=lfs -text
