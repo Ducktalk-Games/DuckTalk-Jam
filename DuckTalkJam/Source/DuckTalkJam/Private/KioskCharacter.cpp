@@ -2,6 +2,7 @@
 
 
 #include "KioskCharacter.h"
+#include "Engine/DataTable.h"
 
 // Sets default values
 AKioskCharacter::AKioskCharacter()

@@ -2,6 +2,7 @@
 
 
 #include "KioskGameModeBase.h"
+#include "KioskCharacter.h"
 
 AKioskGameModeBase::AKioskGameModeBase()
 {
@@ -15,9 +16,34 @@ void AKioskGameModeBase::Tick(float DeltaSeconds)
 	ProcessActiveEvents();
 }
 
+void AKioskGameModeBase::StartRound()
+{
+	OnStartRound.Broadcast();
+}
+
+void AKioskGameModeBase::EndRound()
+{
+	OnEndRound.Broadcast();
+}
+
 void AKioskGameModeBase::OrchestrateEncounter()
 {
+	if (PossibleEncounterCharacters.IsEmpty() || b_EncounterInProgress) return;
 
+	const int32 RandomIndex = FMath::RandRange(0, PossibleEncounterCharacters.Num() - 1); // Get a random index from PossibleEncounterCharacters
+	TSubclassOf<AKioskCharacter> EncounterClass = PossibleEncounterCharacters[RandomIndex]; // Get the AKioskCharacter (BP_EncounterCharacter) class at that index
+	if (!EncounterClass) return;
+
+	// Likely have a period of dead air inbetween encounters.
+	// Could be accomplished by having the encounters start further away
+	// or by adding a delay before the encounter is spawned.
+
+	AKioskCharacter* Encounter = GetWorld()->SpawnActor<AKioskCharacter>(EncounterClass);
+	if (!Encounter) return;
+
+	CurrentEncounter = Encounter;
+	b_EncounterInProgress = true;
+	OnEncounterStarted.Broadcast(Encounter);
 }
 
 void AKioskGameModeBase::OrchestrateEvent()
@@ -33,6 +59,11 @@ void AKioskGameModeBase::OrchestrateEvent()
 	Event->StartEvent(this);
 	b_EventHappening = true;
 	ActiveEvents.Add(Event);
+}
+
+void AKioskGameModeBase::OrchestrateRules()
+{
+
 }
 
 void AKioskGameModeBase::ProcessActiveEvents()
@@ -64,10 +95,17 @@ void AKioskGameModeBase::OrchestrateRandomCharacter(AKioskCharacter* Character)
 
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 {
+	if (!CurrentEncounter || !Character) return;
+
 	if (DoesCharacterViolateRules(Character))
 	{
 		PenalizePlayer();
 	}
+
+	EncounterCharactersLetIn.Add(CurrentEncounter);
+
+	CurrentEncounter = nullptr;
+	b_EncounterInProgress = false;
 }
 
 bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
