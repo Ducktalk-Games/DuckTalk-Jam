@@ -16,6 +16,16 @@ void AKioskGameModeBase::Tick(float DeltaSeconds)
 	ProcessActiveEvents();
 }
 
+void AKioskGameModeBase::StartRound()
+{
+	OnStartRound.Broadcast();
+}
+
+void AKioskGameModeBase::EndRound()
+{
+	OnEndRound.Broadcast();
+}
+
 void AKioskGameModeBase::OrchestrateEncounter()
 {
 	if (PossibleEncounterCharacters.IsEmpty() || b_EncounterInProgress) return;
@@ -28,11 +38,12 @@ void AKioskGameModeBase::OrchestrateEncounter()
 	// Could be accomplished by having the encounters start further away
 	// or by adding a delay before the encounter is spawned.
 
-	/*AKioskCharacter* Encounter = GetWorld()->SpawnActor<AKioskCharacter>(EncounterClass);
+	AKioskCharacter* Encounter = GetWorld()->SpawnActor<AKioskCharacter>(EncounterClass);
 	if (!Encounter) return;
 
-	CurrentEncounter = Encounter;*/
+	CurrentEncounter = Encounter;
 	b_EncounterInProgress = true;
+	OnEncounterStarted.Broadcast(Encounter);
 }
 
 void AKioskGameModeBase::OrchestrateEvent()

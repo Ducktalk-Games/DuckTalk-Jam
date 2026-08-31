@@ -25,11 +25,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Coins = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_ItemsInitialized = false;
+
 	/*
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<APlayerItem> Items;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<F_Modifier> Modifiers;
 

@@ -9,9 +9,11 @@
 #include "KioskGameModeBase.generated.h"
 
 class AKioskCharacter;
-/**
- * 
- */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, Character);
+
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
 {
@@ -28,6 +30,25 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateRules();
+
+#pragma region GameplayEvents
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnStartRound OnStartRound;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnEndRound OnEndRound;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnEncounterStarted OnEncounterStarted;
+
+	UFUNCTION(BlueprintCallable)
+	void StartRound();
+
+	UFUNCTION(BlueprintCallable)
+	void EndRound();
+
+#pragma endregion GameplayEvents
 
 #pragma region Characters
 
