@@ -1,0 +1,7 @@
+This file was generated with the addons Blender for UnrealEngine : https://github.com/xavier150/Blender-For-UnrealEngine-Addons
+
+0 Skeletal Mesh(s) | 1 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
+
+ASSET [Static Mesh] 'SM_PRP_RoadSign_01' EXPORTED IN 8 ms
+ -> Package [Static Mesh] 'SM_PRP_RoadSign_01' SUCCESS (7 ms)
+    F:\Unreal Projects\DuckTalk-Jam\DuckTalkJam\Content\Meshes\PRP\RoadSign\SM_SM_PRP_RoadSign_01.fbx
