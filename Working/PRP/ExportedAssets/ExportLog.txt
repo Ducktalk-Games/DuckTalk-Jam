@@ -2,6 +2,6 @@ This file was generated with the addons Blender for UnrealEngine : https://githu
 
 0 Skeletal Mesh(s) | 1 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
 
-ASSET [Static Mesh] 'SM_ARC_CommunityCentre_A_01' EXPORTED IN 42 ms
- -> Package [Static Mesh] 'SM_ARC_CommunityCentre_A_01' SUCCESS (41 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_SM_ARC_CommunityCentre_A_01.fbx
+ASSET [Static Mesh] 'ARC_CommunityCentre_A_01' EXPORTED IN 9 ms
+ -> Package [Static Mesh] 'ARC_CommunityCentre_A_01' SUCCESS (8 ms)
+    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_ARC_CommunityCentre_A_01.fbx
