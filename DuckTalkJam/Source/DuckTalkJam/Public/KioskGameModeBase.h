@@ -8,6 +8,7 @@
 #include "KioskRule.h"
 #include "KioskGameModeBase.generated.h"
 
+class AKioskCharacter;
 /**
  * 
  */
@@ -28,13 +29,19 @@ public:
 #pragma region Characters
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AKioskCharacter>> PossibleCharacters;
+	TArray<TSubclassOf<AKioskCharacter>> PossibleEncounterCharacters;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AKioskCharacter>> CharactersLetIn;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<AKioskCharacter> CurrentEncounter;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AKioskCharacter>> EncounterCharactersLetIn;
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateRandomCharacter(AKioskCharacter* Character);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EncounterInProgress = false;
 
 #pragma endregion Characters
 

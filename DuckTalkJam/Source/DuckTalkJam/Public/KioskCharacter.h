@@ -16,7 +16,10 @@ public:
 	// Sets default values for this character's properties
 	AKioskCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Traits")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	FName Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	FGameplayTagContainer Traits;
 
 protected:

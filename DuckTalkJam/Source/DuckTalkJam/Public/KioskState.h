@@ -17,6 +17,9 @@ class DUCKTALKJAM_API AKioskState : public AGameStateBase
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Day = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Night = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
