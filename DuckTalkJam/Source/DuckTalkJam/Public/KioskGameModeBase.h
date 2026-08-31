@@ -8,6 +8,7 @@
 #include "KioskRule.h"
 #include "KioskGameModeBase.generated.h"
 
+class AKioskCharacter;
 /**
  * 
  */
