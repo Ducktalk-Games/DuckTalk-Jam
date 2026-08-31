@@ -26,6 +26,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateEvent();
 
+	UFUNCTION(BlueprintCallable)
+	void OrchestrateRules();
+
 #pragma region Characters
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

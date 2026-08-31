@@ -50,6 +50,11 @@ void AKioskGameModeBase::OrchestrateEvent()
 	ActiveEvents.Add(Event);
 }
 
+void AKioskGameModeBase::OrchestrateRules()
+{
+
+}
+
 void AKioskGameModeBase::ProcessActiveEvents()
 {
 	for (int32 i = ActiveEvents.Num() - 1; i >= 0; --i)
