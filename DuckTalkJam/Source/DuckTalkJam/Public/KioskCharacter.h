@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
+#include "Engine/DataTable.h"
 #include "KioskCharacter.generated.h"
 
 UCLASS()
@@ -21,6 +22,14 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	FGameplayTagContainer Traits;
+
+	UPROPERTY(
+		EditAnywhere,
+		BlueprintReadWrite,
+		Category = "Character",
+		meta = (ToolTip = "The Data Table containing all dialogue rows for this character.")
+	)
+	TObjectPtr<UDataTable> ConversationTable;
 
 protected:
 	// Called when the game starts or when spawned
