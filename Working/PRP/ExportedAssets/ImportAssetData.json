@@ -5,9 +5,9 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-08-31 14:27:35",
-        "timestamp": 1788182855,
-        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\SM_PRP_LampPost.blend",
+        "date_time_str": "2026-08-31 21:04:17",
+        "timestamp": 1788206657,
+        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\CommunityCentre.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
@@ -16,20 +16,20 @@
     "assets": [
         {
             "scene_unit_scale": 1.0,
-            "asset_name": "SM_PRP_RoadSign_01",
+            "asset_name": "SM_ARC_CommunityCentre_A_01",
             "asset_type": "StaticMesh",
-            "asset_import_name": "SM_SM_PRP_RoadSign_01",
+            "asset_import_name": "SM_SM_ARC_CommunityCentre_A_01",
             "asset_import_path": "Game\\ImportedBlenderAssets",
             "files": [
                 {
                     "type": "FBX",
                     "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\DuckTalkJam\\Content\\Meshes\\PRP\\RoadSign\\SM_SM_PRP_RoadSign_01.fbx"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_SM_ARC_CommunityCentre_A_01.fbx"
                 },
                 {
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\DuckTalkJam\\Content\\Meshes\\PRP\\RoadSign\\SM_SM_PRP_RoadSign_01_additional_data.json"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_SM_ARC_CommunityCentre_A_01_additional_data.json"
                 }
             ],
             "auto_generate_collision": true,
