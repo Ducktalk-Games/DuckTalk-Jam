@@ -44,6 +44,7 @@ void UAC_DialogueSystem::StartDialogue()
 
 	CurrentNode = EntryRow;
 	b_IsInDialogue = true;
+	OnDialogueStarted.Broadcast();
 }
 
 void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
