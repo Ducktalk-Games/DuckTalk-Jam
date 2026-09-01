@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "KioskGameplayEvent.h"
 #include "KioskRule.h"
+#include "KioskState.h"
 #include "KioskGameModeBase.generated.h"
 
 class AKioskCharacter;
@@ -21,6 +22,9 @@ class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
 
 public:
 	AKioskGameModeBase();
+
+	UFUNCTION(BlueprintPure)
+	bool IsKioskPhase(EKioskPhase Phase) const;
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateEncounter();
@@ -107,5 +111,6 @@ public:
 #pragma endregion Events
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 };
