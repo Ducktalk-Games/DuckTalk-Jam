@@ -6,7 +6,7 @@ on:
       - main
 permissions:
   contents: write
-  actions: write   # required for `gh run cancel`
+  actions: write
 jobs:
   watchdog:
     runs-on: ubuntu-latest
