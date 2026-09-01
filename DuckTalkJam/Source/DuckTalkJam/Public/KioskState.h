@@ -17,16 +17,19 @@ class DUCKTALKJAM_API AKioskState : public AGameStateBase
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Day = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Night = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Coins = 0;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_ItemsInitialized = false;
+
 	/*
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<APlayerItem> Items;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<F_Modifier> Modifiers;
 
