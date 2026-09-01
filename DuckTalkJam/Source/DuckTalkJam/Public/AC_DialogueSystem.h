@@ -8,6 +8,8 @@
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
+class AKioskState;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -18,6 +20,9 @@ class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UAC_DialogueSystem();
+
+	UPROPERTY()
+	TObjectPtr<AKioskState> KioskState;
 
 	UPROPERTY(
 		EditAnywhere,

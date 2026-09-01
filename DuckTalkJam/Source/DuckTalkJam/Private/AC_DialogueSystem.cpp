@@ -4,6 +4,7 @@
 #include "AC_DialogueSystem.h"
 #include "F_DialogueRow.h"
 #include "Engine/DataTable.h"
+#include "KioskState.h"
 
 
 // Sets default values for this component's properties
@@ -18,6 +19,7 @@ UAC_DialogueSystem::UAC_DialogueSystem()
 void UAC_DialogueSystem::BeginPlay()
 {
 	Super::BeginPlay();
+	KioskState = GetWorld()->GetGameState<AKioskState>();
 }
 
 // Called every frame
@@ -119,6 +121,8 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		EndDialogue();
 		return;
 	}
+
+	if (!Choice.Flag.IsNone()) KioskState->AddFlag(Choice.Flag);
 
 	OutNextRow = Choice.NextRow;
 }

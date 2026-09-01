@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	EKioskPhase CurrentPhase = EKioskPhase::Setup;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	TArray<FName> Flags;
+
 	/*
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -46,6 +49,19 @@ public:
 	TArray<F_NoteItem> Notes;
 
 	*/
+
+#pragma region Flags
+
+	UFUNCTION(BlueprintCallable)
+	void AddFlag(FName Flag);
+
+	UFUNCTION(BlueprintCallable)
+	bool HasFlag(FName Flag);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveFlag(FName Flag);
+
+#pragma endregion Flags
 
 	UFUNCTION(BlueprintCallable)
 	void PopulateItems();

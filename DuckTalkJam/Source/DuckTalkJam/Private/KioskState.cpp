@@ -4,6 +4,21 @@
 #include "KioskState.h"
 #include "DayEncounterConfig.h"
 
+void AKioskState::AddFlag(FName Flag)
+{
+	if (!Flags.Contains(Flag)) Flags.Add(Flag);
+}
+
+bool AKioskState::HasFlag(FName Flag)
+{
+	return Flags.Contains(Flag);
+}
+
+void AKioskState::RemoveFlag(FName Flag)
+{
+	if (Flags.Contains(Flag)) Flags.Remove(Flag);
+}
+
 void AKioskState::PopulateItems()
 {
 
