@@ -5,31 +5,29 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-01 14:39:51",
-        "timestamp": 1788269991,
+        "date_time_str": "2026-09-01 14:39:50",
+        "timestamp": 1788269990,
         "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\EggPendulum.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
     },
-    "spawnable_camera": true,
-    "sequencer_frame_start": 1,
-    "sequencer_frame_end": 250,
-    "sequencer_frame_rate_denominator": 1.0,
-    "sequencer_frame_rate_numerator": 24,
-    "pixel_aspect_x": 1.0,
-    "pixel_aspect_y": 1.0,
-    "render_resolution_x": 1920,
-    "render_resolution_y": 1080,
-    "secure_crop": 0.0001,
-    "unreal_import_location": "Game\\ImportedBlenderAssets",
-    "cameras": [],
-    "marker_sections": [
-        {
-            "start_time": 1,
-            "end_time": 251,
-            "has_camera": false,
-            "camera_name": ""
-        }
-    ]
+    "DefaultSettings": {},
+    "Sockets": [],
+    "static_mesh_lod_group": null,
+    "level_of_details": {},
+    "vertex_color_import_option": "IGNORE",
+    "vertex_override_color": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "import_materials": true,
+    "import_textures": false,
+    "flip_normal_map_green_channel": false,
+    "reorder_material_to_fbx_order": true,
+    "material_search_location": "Local",
+    "generate_light_map_uvs": true,
+    "use_custom_light_map_resolution": false,
+    "light_map_resolution": -1
 }
