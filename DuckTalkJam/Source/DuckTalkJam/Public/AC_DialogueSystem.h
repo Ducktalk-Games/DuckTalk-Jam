@@ -8,6 +8,7 @@
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
@@ -26,6 +27,8 @@ public:
 	)
 	TObjectPtr<UDataTable> DialogueTable;
 
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
+	FOnDialogueStarted OnDialogueStarted;
 	UFUNCTION(
 		BlueprintCallable,
 		Category = "Dialogue",

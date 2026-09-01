@@ -2,6 +2,7 @@
 
 
 #include "KioskState.h"
+#include "DayEncounterConfig.h"
 
 void AKioskState::PopulateItems()
 {

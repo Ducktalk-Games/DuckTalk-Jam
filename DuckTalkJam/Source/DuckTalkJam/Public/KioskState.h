@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DayEncounterConfig.h"
 #include "GameFramework/GameStateBase.h"
 #include "KioskState.generated.h"
 
@@ -25,7 +26,7 @@ class DUCKTALKJAM_API AKioskState : public AGameStateBase
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	int32 Day = 0;
+	int32 Day = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;

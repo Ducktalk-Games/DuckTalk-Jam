@@ -10,10 +10,11 @@
 #include "KioskGameModeBase.generated.h"
 
 class AKioskCharacter;
+class AKioskState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -22,6 +23,9 @@ class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
 
 public:
 	AKioskGameModeBase();
+
+	UPROPERTY()
+	TObjectPtr<AKioskState> KioskState;
 
 	UFUNCTION(BlueprintPure)
 	bool IsKioskPhase(EKioskPhase Phase) const;
@@ -56,14 +60,21 @@ public:
 
 #pragma region Characters
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<AKioskCharacter>> PossibleEncounterCharacters;
+#pragma region Day Progression
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encounters")
+	TMap<int32, FDayEncounterConfig> EncountersPerDay;
+
+#pragma endregion Day Progression
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<AKioskCharacter> CurrentEncounter;
+	TSubclassOf<AKioskCharacter> CurrentEncounter;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<AKioskCharacter>> EncounterCharactersLetIn;
+	int32 CurrentEncounterIndex = 0;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TSubclassOf<AKioskCharacter>> EncounterCharactersLetIn;
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateRandomCharacter(AKioskCharacter* Character);

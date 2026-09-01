@@ -13,6 +13,13 @@ AKioskGameModeBase::AKioskGameModeBase()
 void AKioskGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+	KioskState = GetGameState<AKioskState>();
+
+	if (!KioskState)
+	{
+		UE_LOG(LogTemp, Error, TEXT("KioskState is null!"));
+		return;
+	}
 
 	StartRound();
 }
@@ -36,29 +43,24 @@ void AKioskGameModeBase::EndRound()
 
 bool AKioskGameModeBase::IsKioskPhase(EKioskPhase Phase) const
 {
-	const AKioskState* KioskState = GetGameState<AKioskState>();
+	if (!KioskState) return false;
 	return KioskState && KioskState->CurrentPhase == Phase;
 }
 
 void AKioskGameModeBase::OrchestrateEncounter()
 {
 	if (!IsKioskPhase(EKioskPhase::Playing)) return;
-	if (PossibleEncounterCharacters.IsEmpty() || b_EncounterInProgress) return;
+	if (EncountersPerDay.IsEmpty() || b_EncounterInProgress) return;
 
-	const int32 RandomIndex = FMath::RandRange(0, PossibleEncounterCharacters.Num() - 1); // Get a random index from PossibleEncounterCharacters
-	TSubclassOf<AKioskCharacter> EncounterClass = PossibleEncounterCharacters[RandomIndex]; // Get the AKioskCharacter (BP_EncounterCharacter) class at that index
-	if (!EncounterClass) return;
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
+	if (!DayConfig && !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex)) return;
+	
+	TSubclassOf<AKioskCharacter> CharacterClass = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterClass;
+	if (!CharacterClass) return;
 
-	// Likely have a period of dead air inbetween encounters.
-	// Could be accomplished by having the encounters start further away
-	// or by adding a delay before the encounter is spawned.
-
-	AKioskCharacter* Encounter = GetWorld()->SpawnActor<AKioskCharacter>(EncounterClass);
-	if (!Encounter) return;
-
-	CurrentEncounter = Encounter;
+	CurrentEncounter = CharacterClass;
 	b_EncounterInProgress = true;
-	OnEncounterStarted.Broadcast(Encounter);
+	OnEncounterStarted.Broadcast(CharacterClass);
 }
 
 void AKioskGameModeBase::OrchestrateEvent()
