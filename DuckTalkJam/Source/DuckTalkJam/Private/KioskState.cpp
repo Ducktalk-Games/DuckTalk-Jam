@@ -19,17 +19,12 @@ void AKioskState::RemoveFlag(FName Flag)
 	if (Flags.Contains(Flag)) Flags.Remove(Flag);
 }
 
-void AKioskState::PopulateItems()
+void AKioskState::AddItem(FGameplayTagContainer ItemTag)
 {
-
+	if (!Items.Contains(ItemTag)) Items.Add(ItemTag);
 }
 
-void AKioskState::ListModifiers()
+void AKioskState::RemoveItem(FGameplayTagContainer ItemTag)
 {
-
-}
-
-void AKioskState::LoadNotes()
-{
-
+	if (Items.Contains(ItemTag)) Items.Remove(ItemTag);
 }

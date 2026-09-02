@@ -24,20 +24,13 @@ public:
 	float Coins = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	TArray<FGameplayTagContainer> Items;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	bool b_ItemsInitialized = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	TArray<FName> Flags;
-
-	/*
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<F_Modifier> Modifiers;
-
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<F_NoteItem> Notes;
-
-	*/
 
 #pragma region Flags
 
@@ -50,14 +43,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveFlag(FName Flag);
 
+	UFUNCTION(BlueprintCallable)
+	void AddItem(FGameplayTagContainer ItemTag);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveItem(FGameplayTagContainer ItemTag);
+
 #pragma endregion Flags
 
-	UFUNCTION(BlueprintCallable)
-	void PopulateItems();
-
-	UFUNCTION(BlueprintCallable)
-	void ListModifiers();
-
-	UFUNCTION(BlueprintCallable)
-	void LoadNotes();
 };

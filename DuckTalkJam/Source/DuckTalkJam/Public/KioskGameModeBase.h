@@ -12,18 +12,20 @@
 class AKioskCharacter;
 class AKioskState;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPenalizePlayer);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
-
 UENUM(BlueprintType)
 enum class EKioskPhase : uint8
 {
+	None 		UMETA(DisplayName = "None"),
 	Setup		UMETA(DisplayName = "Setup"),
 	Playing		UMETA(DisplayName = "Playing"),
 	EndOfDay	UMETA(DisplayName = "End Of Day")
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPenalizePlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -37,14 +39,13 @@ public:
 	TObjectPtr<AKioskState> KioskState;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	EKioskPhase CurrentPhase = EKioskPhase::Setup;
+	EKioskPhase CurrentPhase = EKioskPhase::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FirstEncounterDelay = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SubsequentEncounterDelay = 15.0f;
-
 
 	UFUNCTION(BlueprintPure)
 	bool IsGamePhase(EKioskPhase Phase) const;
@@ -75,6 +76,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnPenalizePlayer OnPenalizePlayer;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnPhaseChanged OnPhaseChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEncounterStarted OnEncounterStarted;

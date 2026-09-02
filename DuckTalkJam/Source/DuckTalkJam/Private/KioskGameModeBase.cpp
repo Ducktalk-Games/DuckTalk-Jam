@@ -56,10 +56,13 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	CurrentPhase = NewPhase;
 	switch (CurrentPhase)
 	{
+		case EKioskPhase::None: break;
 		case EKioskPhase::Setup: break;
 		case EKioskPhase::Playing: StartRound(); break;
 		case EKioskPhase::EndOfDay: EndRound(); break;
 	}
+
+	OnPhaseChanged.Broadcast(NewPhase);
 }
 
 void AKioskGameModeBase::TryOrchestrateEncounter()
