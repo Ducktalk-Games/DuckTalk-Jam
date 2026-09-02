@@ -169,7 +169,7 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	if (!CurrentEncounter || !Character) return;
 
 	if (DoesCharacterViolateRules(Character)) PenalizePlayer();
-	else ++CorrectlyLetIn;
+	else RewardPlayer();
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
@@ -195,4 +195,9 @@ bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
 void AKioskGameModeBase::PenalizePlayer()
 {
 	OnPenalizePlayer.Broadcast();
+}
+
+void AKioskGameModeBase::RewardPlayer()
+{
+	OnRewardPlayer.Broadcast();
 }

@@ -24,6 +24,7 @@ enum class EKioskPhase : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPenalizePlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardPlayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
 
@@ -76,6 +77,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnPenalizePlayer OnPenalizePlayer;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnRewardPlayer OnRewardPlayer;
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnPhaseChanged OnPhaseChanged;
@@ -139,6 +143,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PenalizePlayer();
+
+	UFUNCTION(BlueprintCallable)
+	void RewardPlayer();
 
 #pragma endregion Rules
 
