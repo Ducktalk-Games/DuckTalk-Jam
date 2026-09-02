@@ -7,14 +7,6 @@
 #include "GameFramework/GameStateBase.h"
 #include "KioskState.generated.h"
 
-UENUM(BlueprintType)
-enum class EKioskPhase : uint8
-{
-	Setup		UMETA(DisplayName = "Setup"),
-	Playing		UMETA(DisplayName = "Playing"),
-	EndOfDay	UMETA(DisplayName = "End Of Day")
-};
-
 /**
  * 
  */
@@ -33,9 +25,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	bool b_ItemsInitialized = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	EKioskPhase CurrentPhase = EKioskPhase::Setup;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	TArray<FName> Flags;

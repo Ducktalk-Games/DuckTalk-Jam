@@ -13,15 +13,9 @@ AKioskGameModeBase::AKioskGameModeBase()
 void AKioskGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	KioskState = GetGameState<AKioskState>();
-
-	if (!KioskState)
-	{
-		UE_LOG(LogTemp, Error, TEXT("KioskState is null!"));
-		return;
-	}
-
-	StartRound();
+	SetKioskPhase(EKioskPhase::Setup);
 }
 
 void AKioskGameModeBase::Tick(float DeltaSeconds)
@@ -33,6 +27,15 @@ void AKioskGameModeBase::Tick(float DeltaSeconds)
 
 void AKioskGameModeBase::StartRound()
 {
+	SetKioskPhase(EKioskPhase::Playing);
+	GetWorldTimerManager().SetTimer(
+		EncounterTimerHandle,
+		this,
+		&AKioskGameModeBase::TryOrchestrateEncounter,
+		SubsequentEncounterDelay,
+		true,
+		FirstEncounterDelay
+	);
 	OnStartRound.Broadcast();
 }
 
@@ -41,31 +44,73 @@ void AKioskGameModeBase::EndRound()
 	OnEndRound.Broadcast();
 }
 
-bool AKioskGameModeBase::IsKioskPhase(EKioskPhase Phase) const
+bool AKioskGameModeBase::IsGamePhase(EKioskPhase Phase) const
 {
-	if (!KioskState) return false;
-	return KioskState && KioskState->CurrentPhase == Phase;
+	return CurrentPhase == Phase;
 }
 
-void AKioskGameModeBase::OrchestrateEncounter()
+void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
-	if (EncountersPerDay.IsEmpty() || b_EncounterInProgress) return;
+	if (CurrentPhase == NewPhase) return;
+
+	CurrentPhase = NewPhase;
+	switch (CurrentPhase)
+	{
+		case EKioskPhase::Setup: break;
+		case EKioskPhase::Playing: StartRound(); break;
+		case EKioskPhase::EndOfDay: EndRound(); break;
+	}
+}
+
+void AKioskGameModeBase::TryOrchestrateEncounter()
+{
+	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress || !CurrentEncounter) return;
+
+	bool bEncountersLeft = false;
+	OrchestrateEncounter(bEncountersLeft);
+
+	if (!bEncountersLeft)
+	{
+		GetWorldTimerManager().ClearTimer(EncounterTimerHandle);
+		CurrentPhase = EKioskPhase::EndOfDay;
+		EndRound();
+	}
+}
+
+void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
+{
+	bEncountersLeft = false;
+
+	if (!IsGamePhase(EKioskPhase::Playing) || EncountersPerDay.IsEmpty()) return;
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
-	if (!DayConfig && !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex)) return;
-	
+	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex)) return;
+
 	TSubclassOf<AKioskCharacter> CharacterClass = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterClass;
 	if (!CharacterClass) return;
 
+	const bool bHasMoreEncountersToday = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
+	bool bHasMoreDays = false;
+	for (const auto& Pair : EncountersPerDay)
+	{
+		if (Pair.Key > KioskState->Day)
+		{
+			bHasMoreDays = true;
+			break;
+		}
+	}
+
+	bEncountersLeft = bHasMoreEncountersToday || bHasMoreDays;
+
 	CurrentEncounter = CharacterClass;
 	b_EncounterInProgress = true;
+
 	OnEncounterStarted.Broadcast(CharacterClass);
 }
 
 void AKioskGameModeBase::OrchestrateEvent()
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
 	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
@@ -81,13 +126,13 @@ void AKioskGameModeBase::OrchestrateEvent()
 
 void AKioskGameModeBase::OrchestrateRules()
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
 
 }
 
 void AKioskGameModeBase::ProcessActiveEvents()
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
 
 	for (int32 i = ActiveEvents.Num() - 1; i >= 0; --i)
 	{
@@ -111,29 +156,29 @@ void AKioskGameModeBase::ProcessActiveEvents()
 
 void AKioskGameModeBase::OrchestrateRandomCharacter(AKioskCharacter* Character)
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
 
 }
 
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
 
-	if (DoesCharacterViolateRules(Character))
-	{
-		PenalizePlayer();
-	}
+	if (DoesCharacterViolateRules(Character)) PenalizePlayer();
+	else ++CorrectlyLetIn;
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
 	b_EncounterInProgress = false;
+
+	++CurrentEncounterIndex;
 }
 
 bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
 {
-	if (!IsKioskPhase(EKioskPhase::Playing)) return false;
+	if (!IsGamePhase(EKioskPhase::Playing)) return false;
 	if (!Character) return false;
 
 	for (UKioskRule* Rule : AppliedRules)
@@ -146,5 +191,5 @@ bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
 
 void AKioskGameModeBase::PenalizePlayer()
 {
-
+	OnPenalizePlayer.Broadcast();
 }

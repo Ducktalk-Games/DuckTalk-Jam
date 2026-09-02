@@ -14,7 +14,16 @@ class AKioskState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPenalizePlayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
+
+UENUM(BlueprintType)
+enum class EKioskPhase : uint8
+{
+	Setup		UMETA(DisplayName = "Setup"),
+	Playing		UMETA(DisplayName = "Playing"),
+	EndOfDay	UMETA(DisplayName = "End Of Day")
+};
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -27,11 +36,28 @@ public:
 	UPROPERTY()
 	TObjectPtr<AKioskState> KioskState;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	EKioskPhase CurrentPhase = EKioskPhase::Setup;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FirstEncounterDelay = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SubsequentEncounterDelay = 15.0f;
+
+
 	UFUNCTION(BlueprintPure)
-	bool IsKioskPhase(EKioskPhase Phase) const;
+	bool IsGamePhase(EKioskPhase Phase) const;
 
 	UFUNCTION(BlueprintCallable)
-	void OrchestrateEncounter();
+	void SetKioskPhase(EKioskPhase NewPhase);
+
+	FTimerHandle EncounterTimerHandle;
+	UFUNCTION(BlueprintCallable)
+	void TryOrchestrateEncounter();
+
+	UFUNCTION(BlueprintCallable)
+	void OrchestrateEncounter(bool& bEncountersLeft);
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateEvent();
@@ -46,6 +72,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEndRound OnEndRound;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnPenalizePlayer OnPenalizePlayer;
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEncounterStarted OnEncounterStarted;
@@ -75,6 +104,12 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TSubclassOf<AKioskCharacter>> EncounterCharactersLetIn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CorrectlyLetIn = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Mistakes = 0;
 
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateRandomCharacter(AKioskCharacter* Character);
