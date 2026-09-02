@@ -15,6 +15,9 @@ struct DUCKTALKJAM_API FF_DialogueChoice
     FText ChoiceText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    FName RequiredFlag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     FName Flag;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
