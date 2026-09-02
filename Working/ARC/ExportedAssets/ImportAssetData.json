@@ -5,8 +5,8 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-02 13:25:56",
-        "timestamp": 1788351956,
+        "date_time_str": "2026-09-03 00:24:41",
+        "timestamp": 1788391481,
         "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\ARC\\SM_ARC_Shop.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
