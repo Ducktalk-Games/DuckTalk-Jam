@@ -18,7 +18,8 @@ enum class EKioskPhase : uint8
 	None 		UMETA(DisplayName = "None"),
 	Setup		UMETA(DisplayName = "Setup"),
 	Playing		UMETA(DisplayName = "Playing"),
-	EndOfDay	UMETA(DisplayName = "End Of Day")
+	EndOfDay	UMETA(DisplayName = "End Of Day"),
+	Shopping	UMETA(DisplayName = "Shopping")
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);

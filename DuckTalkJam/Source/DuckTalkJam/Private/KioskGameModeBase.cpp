@@ -60,6 +60,7 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 		case EKioskPhase::Setup: break;
 		case EKioskPhase::Playing: StartRound(); break;
 		case EKioskPhase::EndOfDay: EndRound(); break;
+		case EKioskPhase::Shopping: break;
 	}
 
 	OnPhaseChanged.Broadcast(NewPhase);
