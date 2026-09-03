@@ -116,13 +116,53 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 	// Valid choice, but deliberately has nowhere to go
 	if (Choice.NextRow.IsNone())
 	{
-		UE_LOG(LogTemp, Log,
-			TEXT("Choice has no next row. Ending dialogue."));
+		UE_LOG(LogTemp, Log, TEXT("Choice has no next row. Ending dialogue."));
 		EndDialogue();
 		return;
 	}
 
-	if (!Choice.Flag.IsNone()) KioskState->AddFlag(Choice.Flag);
+	if (!Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
+
+	switch (Choice.ChoiceFunction)
+	{
+		case EChoiceFunction::None: break;
+		case EChoiceFunction::EndDialogue: EndDialogue(); return;
+		default:
+			UE_LOG(LogTemp, Error, TEXT("Unknown choice function."));
+			EndDialogue();
+			return;
+	}
 
 	OutNextRow = Choice.NextRow;
+}
+
+bool UAC_DialogueSystem::FindChoiceWithFlagInTable(
+	FGameplayTagContainer FlagToFind,
+	FF_DialogueChoice& OutChoice,
+	FName& OutRowName) const
+{
+	OutChoice = FF_DialogueChoice();
+	OutRowName = NAME_None;
+
+	if (!DialogueTable || !FlagToFind.IsValid()) return false;
+
+	const TMap<FName, uint8*>& RowMap = DialogueTable->GetRowMap();
+	for (const TPair<FName, uint8*>& RowPair : RowMap)
+	{
+		const FName RowName = RowPair.Key;
+		const FF_DialogueRow* DialogueRow = reinterpret_cast<const FF_DialogueRow*>(RowPair.Value);
+		if (!DialogueRow) continue;
+
+		for (const FF_DialogueChoice& Choice : DialogueRow->Choices)
+		{
+			if (Choice.Flag.IsValid() && FlagToFind.HasTag(Choice.Flag))
+			{
+				OutChoice = Choice;
+				OutRowName = RowName;
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

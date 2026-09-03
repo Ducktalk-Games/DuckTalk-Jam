@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "F_DialogueRow.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
@@ -78,6 +79,13 @@ public:
 		meta = (ToolTip = "Selects a choice to progress the dialogue.")
 	)
 	void SelectChoice(const FF_DialogueChoice& Choice, FName& OutNextRow);
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Tries to find a choice with a flag in the dialogue table.")
+	)
+	bool FindChoiceWithFlagInTable(FGameplayTagContainer FlagToFind, FF_DialogueChoice& OutChoice, FName& OutRowName) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	bool b_IsInDialogue = false;
