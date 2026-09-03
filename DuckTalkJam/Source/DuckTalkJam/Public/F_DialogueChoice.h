@@ -12,7 +12,9 @@ enum class EChoiceFunction : uint8
 {
     None,
     EndDialogue,
-    HangUpPhone
+    HangUpPhone,
+	Process,
+    TurnAway
 };
 
 UENUM(BlueprintType)

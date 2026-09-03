@@ -131,7 +131,18 @@ void AKioskGameModeBase::OrchestrateEvent()
 void AKioskGameModeBase::OrchestrateRules()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!KioskState) return;
 
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
+	if (!DayConfig) return;
+
+	AppliedRules.Empty();
+	for (TSubclassOf<UKioskRule> RuleClass : DayConfig->Rules)
+	{
+		if (!RuleClass) continue;
+		UKioskRule* Rule = NewObject<UKioskRule>(this, RuleClass);
+		if (Rule) AppliedRules.Add(Rule);
+	}
 }
 
 void AKioskGameModeBase::ProcessActiveEvents()
@@ -175,8 +186,22 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
+	CurrentEncounterCharacter = nullptr;
 	b_EncounterInProgress = false;
+	++CurrentEncounterIndex;
+}
 
+void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
+{
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!CurrentEncounter || !Character) return;
+
+	if (DoesCharacterViolateRules(Character)) RewardPlayer(Character);   // correctly kept out
+	else PenalizePlayer(Character);                                     // should have been let in
+
+	CurrentEncounter = nullptr;
+	CurrentEncounterCharacter = nullptr;
+	b_EncounterInProgress = false;
 	++CurrentEncounterIndex;
 }
 

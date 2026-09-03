@@ -113,6 +113,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TSubclassOf<AKioskCharacter> CurrentEncounter;
+	
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<AKioskCharacter> CurrentEncounterCharacter;
 
 	UPROPERTY(BlueprintReadOnly)
 	int32 CurrentEncounterIndex = 0;
@@ -144,6 +147,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ProcessCharacter(AKioskCharacter* Character);
+
+	UFUNCTION(BlueprintCallable)
+	void TurnAwayCharacter(AKioskCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
 	bool DoesCharacterViolateRules(AKioskCharacter* Character);

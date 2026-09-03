@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "KioskCharacterEntry.h"
+#include "KioskRule.h"
 #include "DayEncounterConfig.generated.h"
 
 USTRUCT(BlueprintType)
@@ -16,4 +17,7 @@ struct DUCKTALKJAM_API FDayEncounterConfig
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> BossDayConversationTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UKioskRule>> Rules;
 };
