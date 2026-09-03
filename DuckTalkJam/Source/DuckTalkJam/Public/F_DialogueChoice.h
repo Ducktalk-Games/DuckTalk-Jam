@@ -4,7 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Class.h"
+#include "GameplayTagContainer.h"
 #include "F_DialogueChoice.generated.h"
+
+UENUM(BlueprintType)
+enum class EChoiceFunction : uint8
+{
+    None,
+    EndDialogue
+};
 
 USTRUCT(BlueprintType)
 struct DUCKTALKJAM_API FF_DialogueChoice
@@ -15,18 +23,23 @@ struct DUCKTALKJAM_API FF_DialogueChoice
     FText ChoiceText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
-    FName RequiredFlag;
+    FGameplayTag RequiredFlag;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
-    FName Flag;
+    FGameplayTag Flag;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     FName NextRow;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	EChoiceFunction ChoiceFunction = EChoiceFunction::None;
    
     bool IsEmpty() const
     {
         return ChoiceText.IsEmpty()
-            && Flag.IsNone()
-            && NextRow.IsNone();
+            && !RequiredFlag.IsValid()
+            && !Flag.IsValid()
+            && NextRow.IsNone()
+            && ChoiceFunction == EChoiceFunction::None;
     }
 };

@@ -30,18 +30,18 @@ public:
 	bool b_ItemsInitialized = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	TArray<FName> Flags;
+	TArray<FGameplayTag> Flags;
 
 #pragma region Flags
 
 	UFUNCTION(BlueprintCallable)
-	void AddFlag(FName Flag);
+	void AddFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	bool HasFlag(FName Flag);
+	bool HasFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveFlag(FName Flag);
+	void RemoveFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
 	void AddItem(FGameplayTagContainer ItemTag);
