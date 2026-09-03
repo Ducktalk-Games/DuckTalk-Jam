@@ -14,4 +14,6 @@ struct DUCKTALKJAM_API FDayEncounterConfig
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FKioskCharacterEntry> CharacterOrder;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UDataTable> BossDayConversationTable;
 };

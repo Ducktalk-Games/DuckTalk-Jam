@@ -13,6 +13,7 @@ class AKioskState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChoiceWithFunction, EChoiceFunction, Function);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
 {
@@ -86,6 +87,9 @@ public:
 		meta = (ToolTip = "Tries to find a choice with a flag in the dialogue table.")
 	)
 	bool FindChoiceWithFlagInTable(FGameplayTagContainer FlagToFind, FF_DialogueChoice& OutChoice, FName& OutRowName) const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue|Events")
+	FOnChoiceWithFunction OnChoiceWithFunction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	bool b_IsInDialogue = false;

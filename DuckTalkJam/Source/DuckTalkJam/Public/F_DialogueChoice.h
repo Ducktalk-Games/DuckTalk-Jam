@@ -11,7 +11,8 @@ UENUM(BlueprintType)
 enum class EChoiceFunction : uint8
 {
     None,
-    EndDialogue
+    EndDialogue,
+    HangUpPhone
 };
 
 UENUM(BlueprintType)
