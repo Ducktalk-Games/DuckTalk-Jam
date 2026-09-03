@@ -82,7 +82,6 @@ void UAC_DialogueSystem::EndDialogue()
 {
 	b_IsInDialogue = false;
 	CurrentNode = nullptr;
-	DialogueTable = nullptr;
 
 	UE_LOG(LogTemp, Log, TEXT("Dialogue ended."));
 	OnDialogueEnded.Broadcast();
@@ -94,7 +93,9 @@ TArray<FF_DialogueChoice> UAC_DialogueSystem::GetChoices()
 	return CurrentNode->Choices;
 }
 
-void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& OutNextRow)
+void UAC_DialogueSystem::SelectChoice(
+	const FF_DialogueChoice& Choice,
+	FName& OutNextRow)
 {
 	OutNextRow = NAME_None;
 
@@ -105,7 +106,6 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		return;
 	}
 
-	// Completely invalid / blank choice
 	if (Choice.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Selected dialogue choice is empty."));
@@ -113,24 +113,15 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		return;
 	}
 
-	// Valid choice, but deliberately has nowhere to go
+	if (Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
+	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
+
+	// Then determine whether dialogue continues.
 	if (Choice.NextRow.IsNone())
 	{
 		UE_LOG(LogTemp, Log, TEXT("Choice has no next row. Ending dialogue."));
 		EndDialogue();
 		return;
-	}
-
-	if (!Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
-
-	switch (Choice.ChoiceFunction)
-	{
-		case EChoiceFunction::None: break;
-		case EChoiceFunction::EndDialogue: EndDialogue(); return;
-		default:
-			UE_LOG(LogTemp, Error, TEXT("Unknown choice function."));
-			EndDialogue();
-			return;
 	}
 
 	OutNextRow = Choice.NextRow;
