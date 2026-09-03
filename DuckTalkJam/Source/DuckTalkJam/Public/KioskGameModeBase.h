@@ -24,10 +24,10 @@ enum class EKioskPhase : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPenalizePlayer);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRewardPlayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPenalizePlayer, AKioskCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRewardPlayer, AKioskCharacter*, Character);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -103,6 +103,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Encounters")
 	TMap<int32, FDayEncounterConfig> EncountersPerDay;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CoinPenalty;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CoinReward;
+
 #pragma endregion Day Progression
 
 	UPROPERTY(BlueprintReadOnly)
@@ -143,10 +149,10 @@ public:
 	bool DoesCharacterViolateRules(AKioskCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
-	void PenalizePlayer();
+	void PenalizePlayer(AKioskCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
-	void RewardPlayer();
+	void RewardPlayer(AKioskCharacter* Character);
 
 #pragma endregion Rules
 

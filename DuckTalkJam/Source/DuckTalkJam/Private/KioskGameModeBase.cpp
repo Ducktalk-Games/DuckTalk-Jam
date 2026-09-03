@@ -169,8 +169,8 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
 
-	if (DoesCharacterViolateRules(Character)) PenalizePlayer();
-	else RewardPlayer();
+	if (DoesCharacterViolateRules(Character)) PenalizePlayer(Character);
+	else RewardPlayer(Character);
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
@@ -193,12 +193,12 @@ bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
 	return false;
 }
 
-void AKioskGameModeBase::PenalizePlayer()
+void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character)
 {
-	OnPenalizePlayer.Broadcast();
+	OnPenalizePlayer.Broadcast(Character);
 }
 
-void AKioskGameModeBase::RewardPlayer()
+void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character)
 {
-	OnRewardPlayer.Broadcast();
+	OnRewardPlayer.Broadcast(Character);
 }
