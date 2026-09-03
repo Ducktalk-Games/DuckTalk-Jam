@@ -14,6 +14,14 @@ enum class EChoiceFunction : uint8
     EndDialogue
 };
 
+UENUM(BlueprintType)
+enum class EChoiceColor : uint8
+{
+    None,
+    Accept,
+    Deny
+};
+
 USTRUCT(BlueprintType)
 struct DUCKTALKJAM_API FF_DialogueChoice
 {
@@ -33,6 +41,9 @@ struct DUCKTALKJAM_API FF_DialogueChoice
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
 	EChoiceFunction ChoiceFunction = EChoiceFunction::None;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    EChoiceColor ChoiceColor = EChoiceColor::None;
    
     bool IsEmpty() const
     {

@@ -9,7 +9,7 @@
 #include "KioskCharacter.generated.h"
 
 UCLASS()
-class DUCKTALKJAM_API AKioskCharacter : public ACharacter
+class DUCKTALKJAM_API AKioskCharacter : public AActor
 {
 	GENERATED_BODY()
 
@@ -38,8 +38,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };
