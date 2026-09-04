@@ -104,10 +104,10 @@ public:
 	TMap<int32, FDayEncounterConfig> EncountersPerDay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CoinPenalty;
+	float CoinPenalty = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CoinReward;
+	float CoinReward = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> PayDocks;
