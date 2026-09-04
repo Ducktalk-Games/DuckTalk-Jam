@@ -109,6 +109,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CoinReward;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, float> PayDocks;
+
 #pragma endregion Day Progression
 
 	UPROPERTY(BlueprintReadOnly)

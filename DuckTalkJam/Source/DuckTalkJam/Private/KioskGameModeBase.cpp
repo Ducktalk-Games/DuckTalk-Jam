@@ -29,6 +29,7 @@ void AKioskGameModeBase::Tick(float DeltaSeconds)
 void AKioskGameModeBase::StartRound()
 {
 	SetKioskPhase(EKioskPhase::Playing);
+	PayDocks.Empty();
 	GetWorldTimerManager().SetTimer(
 		EncounterTimerHandle,
 		this,
