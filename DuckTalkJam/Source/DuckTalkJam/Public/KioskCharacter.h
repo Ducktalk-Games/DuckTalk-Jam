@@ -35,6 +35,11 @@ public:
 	)
 	TObjectPtr<UDataTable> ConversationTable;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
+	void StartEncounter();
+
+	virtual void StartEncounter_Implementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -27,3 +27,8 @@ void AKioskCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+
+void AKioskCharacter::StartEncounter_Implementation()
+{
+	// Overridable.
+}

@@ -25,7 +25,7 @@ enum class EKioskPhase : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, TSubclassOf<AKioskCharacter>, CharacterClass);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPenalizePlayer, AKioskCharacter*, Character);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRewardPlayer, AKioskCharacter*, Character);
 
