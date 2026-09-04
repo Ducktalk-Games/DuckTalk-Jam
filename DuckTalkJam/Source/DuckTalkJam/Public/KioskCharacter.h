@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataTable.h"
+#include "PlayerBase.h"
 #include "KioskCharacter.generated.h"
 
 UCLASS()
@@ -16,6 +17,9 @@ class DUCKTALKJAM_API AKioskCharacter : public AActor
 public:
 	// Sets default values for this character's properties
 	AKioskCharacter();
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player Reference")
+	TObjectPtr<APlayerBase> PlayerReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	FName Name;
