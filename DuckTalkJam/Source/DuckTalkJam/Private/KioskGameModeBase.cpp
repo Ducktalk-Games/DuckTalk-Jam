@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 
 #include "KioskGameModeBase.h"
@@ -42,6 +42,8 @@ void AKioskGameModeBase::StartRound()
 void AKioskGameModeBase::EndRound()
 {
 	OnEndRound.Broadcast();
+	KioskState->Day++;
+	SetKioskPhase(EKioskPhase::Setup);
 }
 
 bool AKioskGameModeBase::IsGamePhase(EKioskPhase Phase) const
@@ -57,9 +59,20 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	switch (CurrentPhase)
 	{
 		case EKioskPhase::None: break;
-		case EKioskPhase::Setup: break;
+		case EKioskPhase::Setup:
+			CurrentEncounterIndex = 0;
+			CurrentEncounter = nullptr;
+			CurrentEncounterCharacter = nullptr;
+			b_EncounterInProgress = false;
+			break;
 		case EKioskPhase::Playing: StartRound(); break;
-		case EKioskPhase::EndOfDay: EndRound(); break;
+		case EKioskPhase::EndOfDay:
+			CurrentEncounterIndex = 0;
+			CurrentEncounter = nullptr;
+			CurrentEncounterCharacter = nullptr;
+			b_EncounterInProgress = false;
+			EndRound();
+			break;
 		case EKioskPhase::Shopping: break;
 	}
 
