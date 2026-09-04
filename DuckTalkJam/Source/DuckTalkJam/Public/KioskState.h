@@ -47,6 +47,9 @@ public:
 	void AddItem(FGameplayTagContainer ItemTag);
 
 	UFUNCTION(BlueprintCallable)
+	bool HasItem(FGameplayTagContainer ItemTag);
+
+	UFUNCTION(BlueprintCallable)
 	void RemoveItem(FGameplayTagContainer ItemTag);
 
 #pragma endregion Flags

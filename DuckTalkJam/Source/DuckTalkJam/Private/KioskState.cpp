@@ -24,6 +24,12 @@ void AKioskState::AddItem(FGameplayTagContainer ItemTag)
 	if (!Items.Contains(ItemTag)) Items.Add(ItemTag);
 }
 
+bool AKioskState::HasItem(FGameplayTagContainer ItemTag)
+{
+	if (Items.Contains(ItemTag)) return true;
+	return false;
+}
+
 void AKioskState::RemoveItem(FGameplayTagContainer ItemTag)
 {
 	if (Items.Contains(ItemTag)) Items.Remove(ItemTag);
