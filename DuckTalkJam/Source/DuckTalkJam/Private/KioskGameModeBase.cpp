@@ -49,7 +49,6 @@ void AKioskGameModeBase::PrepareForNextRound()
 {
 	CurrentEncounterIndex = 0;
 	CurrentEncounter = nullptr;
-	CurrentEncounterCharacter = nullptr;
 	CurrentCharacterDialogueTable = nullptr;
 	CurrentCharacterTraits = FGameplayTagContainer();
 	CurrentCharacterTexture = nullptr;
