@@ -71,6 +71,7 @@ void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 	UE_LOG(LogTemp, Log, TEXT("%s: %s"),
 		*RowToAdvance->Speaker.ToString(),
 		*RowToAdvance->DialogueText.ToString());
+	b_WasPhoneDialogue = false;
 	CurrentNode = RowToAdvance;
 }
 
