@@ -25,6 +25,7 @@ enum class EKioskPhase : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNoEncounters);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPenalizePlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
@@ -86,6 +87,9 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEncounterStarted OnEncounterStarted;
 
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnNoEncounters OnNoEncounters;
+
 	UFUNCTION(BlueprintCallable)
 	void StartRound();
 
@@ -120,6 +124,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterInProgress = false;
+
+	UFUNCTION(BlueprintPure)
+	bool HasEncountersLeft() const;
 
 #pragma endregion Day Progression
 

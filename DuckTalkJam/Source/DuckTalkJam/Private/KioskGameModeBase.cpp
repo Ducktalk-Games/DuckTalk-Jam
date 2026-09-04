@@ -95,43 +95,45 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 {
 	bEncountersLeft = false;
 
-	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress || EncountersPerDay.IsEmpty()) return;
+	if (!IsGamePhase(EKioskPhase::Playing) ||
+		b_EncounterInProgress ||
+		EncountersPerDay.IsEmpty() ||
+		!KioskState)
+	{
+		return;
+	}
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
 	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
 	{
-		GetWorldTimerManager().ClearTimer(EncounterTimerHandle);
-		SetKioskPhase(EKioskPhase::EndOfDay);
+		OnNoEncounters.Broadcast();
 		return;
 	}
 
-	TSubclassOf<AKioskCharacter> CharacterClass = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterClass;
+	const auto& EncounterData = DayConfig->CharacterOrder[CurrentEncounterIndex];
+	TSubclassOf<AKioskCharacter> CharacterClass = EncounterData.CharacterClass;
 	if (!CharacterClass) return;
 
-	TObjectPtr<UDataTable> CharacterDialogueTable = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterConversationTable;
+	UDataTable* CharacterDialogueTable = EncounterData.CharacterConversationTable;
 	if (!CharacterDialogueTable) return;
 
-	FGameplayTagContainer CharacterTraits = DayConfig->CharacterOrder[CurrentEncounterIndex].Traits;
+	FGameplayTagContainer CharacterTraits = EncounterData.Traits;
 	if (CharacterTraits.IsEmpty()) return;
 
-	UTexture2D* CharacterTexture = DayConfig->CharacterOrder[CurrentEncounterIndex].CurrentCharacterTexture;
+	UTexture2D* CharacterTexture = EncounterData.CurrentCharacterTexture;
 	if (!CharacterTexture) return;
 
-	FCharacterSex CharacterSex = DayConfig->CharacterOrder[CurrentEncounterIndex].Sex;
-
-	const bool bHasMoreEncountersToday = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
-	bool bHasMoreDays = false;
-	for (const auto& Pair : EncountersPerDay)
-	{
-		if (Pair.Key > KioskState->Day) { bHasMoreDays = true; break; }
-	}
-
-	bEncountersLeft = bHasMoreEncountersToday || bHasMoreDays;
-
+	FCharacterSex CharacterSex = EncounterData.Sex;
 	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
+
 	if (!InWorldCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No in-world actor found for %s"), *CharacterClass->GetName());
+		UE_LOG(
+			LogTemp,
+			Warning,
+			TEXT("No in-world actor found for %s"),
+			*CharacterClass->GetName()
+		);
 		return;
 	}
 
@@ -143,6 +145,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 	CurrentCharacterSex = CharacterSex;
 	b_EncounterInProgress = true;
 
+	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
 	OnEncounterStarted.Broadcast(InWorldCharacter);
 }
 
@@ -263,4 +266,30 @@ void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTag
 void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
 {
 	OnRewardPlayer.Broadcast(Character, Traits);
+}
+
+bool AKioskGameModeBase::HasEncountersLeft() const
+{
+	if (!KioskState || EncountersPerDay.IsEmpty())
+	{
+		return false;
+	}
+
+	if (const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day))
+	{
+		if (DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1))
+		{
+			return true;
+		}
+	}
+
+	for (const auto& Pair : EncountersPerDay)
+	{
+		if (Pair.Key > KioskState->Day && !Pair.Value.CharacterOrder.IsEmpty())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
