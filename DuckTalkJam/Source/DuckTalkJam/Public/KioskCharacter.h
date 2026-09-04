@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameplayTagContainer.h"
 #include "Engine/DataTable.h"
+#include "PlayerBase.h"
 #include "KioskCharacter.generated.h"
 
 UCLASS()
@@ -16,6 +17,38 @@ class DUCKTALKJAM_API AKioskCharacter : public AActor
 public:
 	// Sets default values for this character's properties
 	AKioskCharacter();
+
+#pragma region Clothing
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<USceneComponent> HatRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<UStaticMeshComponent> HatMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<USceneComponent> GlassesRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<UStaticMeshComponent> GlassesMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<USceneComponent> BeardRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<UStaticMeshComponent> BeardMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<USceneComponent> PatchRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<UStaticMeshComponent> PatchMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<USceneComponent> TieRoot;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
+	TObjectPtr<UStaticMeshComponent> TieMesh;
+
+#pragma endregion
+
+	UPROPERTY(BlueprintReadOnly, Category = "Player Reference")
+	TObjectPtr<APlayerBase> PlayerReference;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	FName Name;
@@ -30,6 +63,11 @@ public:
 		meta = (ToolTip = "The Data Table containing all dialogue rows for this character.")
 	)
 	TObjectPtr<UDataTable> ConversationTable;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
+	void StartEncounter();
+
+	virtual void StartEncounter_Implementation();
 
 protected:
 	// Called when the game starts or when spawned

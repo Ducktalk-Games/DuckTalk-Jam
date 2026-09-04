@@ -4,6 +4,7 @@
 #include "KioskGameModeBase.h"
 #include "KioskCharacter.h"
 #include "KioskState.h"
+#include "Kismet/GameplayStatics.h"
 
 AKioskGameModeBase::AKioskGameModeBase()
 {
@@ -28,6 +29,7 @@ void AKioskGameModeBase::Tick(float DeltaSeconds)
 void AKioskGameModeBase::StartRound()
 {
 	SetKioskPhase(EKioskPhase::Playing);
+	PayDocks.Empty();
 	GetWorldTimerManager().SetTimer(
 		EncounterTimerHandle,
 		this,
@@ -81,7 +83,7 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 
 void AKioskGameModeBase::TryOrchestrateEncounter()
 {
-	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress || !CurrentEncounter) return;
+	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress) return;
 
 	bool bEncountersLeft = false;
 	OrchestrateEncounter(bEncountersLeft);
@@ -89,8 +91,7 @@ void AKioskGameModeBase::TryOrchestrateEncounter()
 	if (!bEncountersLeft)
 	{
 		GetWorldTimerManager().ClearTimer(EncounterTimerHandle);
-		CurrentPhase = EKioskPhase::EndOfDay;
-		EndRound();
+		SetKioskPhase(EKioskPhase::EndOfDay);
 	}
 }
 
@@ -119,10 +120,18 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 
 	bEncountersLeft = bHasMoreEncountersToday || bHasMoreDays;
 
+	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
+	if (!InWorldCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No in-world actor found for %s"), *CharacterClass->GetName());
+		return;
+	}
+
 	CurrentEncounter = CharacterClass;
+	CurrentEncounterCharacter = InWorldCharacter;
 	b_EncounterInProgress = true;
 
-	OnEncounterStarted.Broadcast(CharacterClass);
+	OnEncounterStarted.Broadcast(InWorldCharacter);
 }
 
 void AKioskGameModeBase::OrchestrateEvent()
