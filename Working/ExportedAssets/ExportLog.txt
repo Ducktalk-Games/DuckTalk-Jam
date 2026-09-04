@@ -1,0 +1,10 @@
+This file was generated with the addons Blender for UnrealEngine : https://github.com/xavier150/Blender-For-UnrealEngine-Addons
+
+0 Skeletal Mesh(s) | 2 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
+
+ASSET [Static Mesh] 'Clouds_01_A' EXPORTED IN 10 ms
+ -> Package [Static Mesh] 'Clouds_01_A' SUCCESS (8 ms)
+    C:\Users\genij\Documents\GitHub\DuckTalk-Jam\Working\ExportedAssets\StaticMesh\SM_Clouds_01_A.fbx
+ASSET [Static Mesh] 'Clouds_01_B' EXPORTED IN 11 ms
+ -> Package [Static Mesh] 'Clouds_01_B' SUCCESS (9 ms)
+    C:\Users\genij\Documents\GitHub\DuckTalk-Jam\Working\ExportedAssets\StaticMesh\SM_Clouds_01_B.fbx
