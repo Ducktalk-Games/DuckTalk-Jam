@@ -34,6 +34,11 @@ public:
 
 	virtual void RejectedEntry_Implementation();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
+	void OnDialogueClosed();
+
+	virtual void OnDialogueClosed_Implementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

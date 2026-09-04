@@ -41,3 +41,8 @@ void AKioskCharacter::RejectedEntry_Implementation()
 {
 	// Overridable.
 }
+
+void AKioskCharacter::OnDialogueClosed_Implementation()
+{
+	// Overridable.
+}
