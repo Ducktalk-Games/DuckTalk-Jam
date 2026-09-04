@@ -1,19 +1,30 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 
 #include "KioskState.h"
+#include "DayEncounterConfig.h"
 
-void AKioskState::PopulateItems()
+void AKioskState::AddFlag(FGameplayTag Flag)
 {
-
+	if (!Flags.Contains(Flag)) Flags.Add(Flag);
 }
 
-void AKioskState::ListModifiers()
+bool AKioskState::HasFlag(FGameplayTag Flag)
 {
-
+	return Flags.Contains(Flag);
 }
 
-void AKioskState::LoadNotes()
+void AKioskState::RemoveFlag(FGameplayTag Flag)
 {
+	if (Flags.Contains(Flag)) Flags.Remove(Flag);
+}
 
+void AKioskState::AddItem(FGameplayTagContainer ItemTag)
+{
+	if (!Items.Contains(ItemTag)) Items.Add(ItemTag);
+}
+
+void AKioskState::RemoveItem(FGameplayTagContainer ItemTag)
+{
+	if (Items.Contains(ItemTag)) Items.Remove(ItemTag);
 }

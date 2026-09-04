@@ -1,10 +1,29 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Class.h"
+#include "GameplayTagContainer.h"
 #include "F_DialogueChoice.generated.h"
+
+UENUM(BlueprintType)
+enum class EChoiceFunction : uint8
+{
+    None,
+    EndDialogue,
+    HangUpPhone,
+	Process,
+    TurnAway
+};
+
+UENUM(BlueprintType)
+enum class EChoiceColor : uint8
+{
+    None,
+    Accept,
+    Deny
+};
 
 USTRUCT(BlueprintType)
 struct DUCKTALKJAM_API FF_DialogueChoice
@@ -15,15 +34,26 @@ struct DUCKTALKJAM_API FF_DialogueChoice
     FText ChoiceText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
-    FName Flag;
+    FGameplayTag RequiredFlag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    FGameplayTag Flag;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     FName NextRow;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	EChoiceFunction ChoiceFunction = EChoiceFunction::None;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    EChoiceColor ChoiceColor = EChoiceColor::None;
    
     bool IsEmpty() const
     {
         return ChoiceText.IsEmpty()
-            && Flag.IsNone()
-            && NextRow.IsNone();
+            && !RequiredFlag.IsValid()
+            && !Flag.IsValid()
+            && NextRow.IsNone()
+            && ChoiceFunction == EChoiceFunction::None;
     }
 };

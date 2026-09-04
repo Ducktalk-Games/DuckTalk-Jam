@@ -1,0 +1,23 @@
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "KioskCharacterEntry.h"
+#include "KioskRule.h"
+#include "DayEncounterConfig.generated.h"
+
+USTRUCT(BlueprintType)
+struct DUCKTALKJAM_API FDayEncounterConfig
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FKioskCharacterEntry> CharacterOrder;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UDataTable> BossDayConversationTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UKioskRule>> Rules;
+};

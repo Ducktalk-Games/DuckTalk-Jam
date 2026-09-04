@@ -1,14 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "F_DialogueRow.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
+class AKioskState;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChoiceWithFunction, EChoiceFunction, Function);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
 {
@@ -18,6 +23,9 @@ public:
 	// Sets default values for this component's properties
 	UAC_DialogueSystem();
 
+	UPROPERTY()
+	TObjectPtr<AKioskState> KioskState;
+
 	UPROPERTY(
 		EditAnywhere,
 		BlueprintReadWrite,
@@ -26,6 +34,8 @@ public:
 	)
 	TObjectPtr<UDataTable> DialogueTable;
 
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
+	FOnDialogueStarted OnDialogueStarted;
 	UFUNCTION(
 		BlueprintCallable,
 		Category = "Dialogue",
@@ -70,6 +80,16 @@ public:
 		meta = (ToolTip = "Selects a choice to progress the dialogue.")
 	)
 	void SelectChoice(const FF_DialogueChoice& Choice, FName& OutNextRow);
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Tries to find a choice with a flag in the dialogue table.")
+	)
+	bool FindChoiceWithFlagInTable(FGameplayTagContainer FlagToFind, FF_DialogueChoice& OutChoice, FName& OutRowName) const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Dialogue|Events")
+	FOnChoiceWithFunction OnChoiceWithFunction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	bool b_IsInDialogue = false;

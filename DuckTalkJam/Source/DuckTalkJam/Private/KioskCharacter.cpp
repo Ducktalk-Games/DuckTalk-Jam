@@ -1,7 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 
 #include "KioskCharacter.h"
+#include "Engine/DataTable.h"
 
 // Sets default values
 AKioskCharacter::AKioskCharacter()
@@ -22,12 +23,5 @@ void AKioskCharacter::BeginPlay()
 void AKioskCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-}
-
-// Called to bind functionality to input
-void AKioskCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }

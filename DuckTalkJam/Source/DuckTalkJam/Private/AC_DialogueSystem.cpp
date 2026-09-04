@@ -1,9 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 
 #include "AC_DialogueSystem.h"
 #include "F_DialogueRow.h"
 #include "Engine/DataTable.h"
+#include "KioskState.h"
 
 
 // Sets default values for this component's properties
@@ -18,6 +19,7 @@ UAC_DialogueSystem::UAC_DialogueSystem()
 void UAC_DialogueSystem::BeginPlay()
 {
 	Super::BeginPlay();
+	KioskState = GetWorld()->GetGameState<AKioskState>();
 }
 
 // Called every frame
@@ -44,6 +46,7 @@ void UAC_DialogueSystem::StartDialogue()
 
 	CurrentNode = EntryRow;
 	b_IsInDialogue = true;
+	OnDialogueStarted.Broadcast();
 }
 
 void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
@@ -79,7 +82,6 @@ void UAC_DialogueSystem::EndDialogue()
 {
 	b_IsInDialogue = false;
 	CurrentNode = nullptr;
-	DialogueTable = nullptr;
 
 	UE_LOG(LogTemp, Log, TEXT("Dialogue ended."));
 	OnDialogueEnded.Broadcast();
@@ -91,7 +93,9 @@ TArray<FF_DialogueChoice> UAC_DialogueSystem::GetChoices()
 	return CurrentNode->Choices;
 }
 
-void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& OutNextRow)
+void UAC_DialogueSystem::SelectChoice(
+	const FF_DialogueChoice& Choice,
+	FName& OutNextRow)
 {
 	OutNextRow = NAME_None;
 
@@ -102,7 +106,6 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		return;
 	}
 
-	// Completely invalid / blank choice
 	if (Choice.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("Selected dialogue choice is empty."));
@@ -110,14 +113,47 @@ void UAC_DialogueSystem::SelectChoice(const FF_DialogueChoice& Choice, FName& Ou
 		return;
 	}
 
-	// Valid choice, but deliberately has nowhere to go
+	if (Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
+	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
+
+	// Then determine whether dialogue continues.
 	if (Choice.NextRow.IsNone())
 	{
-		UE_LOG(LogTemp, Log,
-			TEXT("Choice has no next row. Ending dialogue."));
+		UE_LOG(LogTemp, Log, TEXT("Choice has no next row. Ending dialogue."));
 		EndDialogue();
 		return;
 	}
 
 	OutNextRow = Choice.NextRow;
+}
+
+bool UAC_DialogueSystem::FindChoiceWithFlagInTable(
+	FGameplayTagContainer FlagToFind,
+	FF_DialogueChoice& OutChoice,
+	FName& OutRowName) const
+{
+	OutChoice = FF_DialogueChoice();
+	OutRowName = NAME_None;
+
+	if (!DialogueTable || !FlagToFind.IsValid()) return false;
+
+	const TMap<FName, uint8*>& RowMap = DialogueTable->GetRowMap();
+	for (const TPair<FName, uint8*>& RowPair : RowMap)
+	{
+		const FName RowName = RowPair.Key;
+		const FF_DialogueRow* DialogueRow = reinterpret_cast<const FF_DialogueRow*>(RowPair.Value);
+		if (!DialogueRow) continue;
+
+		for (const FF_DialogueChoice& Choice : DialogueRow->Choices)
+		{
+			if (Choice.Flag.IsValid() && FlagToFind.HasTag(Choice.Flag))
+			{
+				OutChoice = Choice;
+				OutRowName = RowName;
+				return true;
+			}
+		}
+	}
+
+	return false;
 }

@@ -1,10 +1,11 @@
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
+#include "KioskCharacter.h"
 #include "KioskRule.generated.h"
-
-class AKioskCharacter;
 
 UCLASS(Abstract, Blueprintable)
 class DUCKTALKJAM_API UKioskRule : public UObject

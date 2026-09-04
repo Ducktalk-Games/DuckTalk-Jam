@@ -1,8 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DayEncounterConfig.h"
 #include "GameFramework/GameStateBase.h"
 #include "KioskState.generated.h"
 
@@ -16,31 +17,38 @@ class DUCKTALKJAM_API AKioskState : public AGameStateBase
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Night = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	int32 Day = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;
 
-	/*
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<APlayerItem> Items;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	TArray<FGameplayTagContainer> Items;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<F_Modifier> Modifiers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	bool b_ItemsInitialized = false;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<F_NoteItem> Notes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	TArray<FGameplayTag> Flags;
 
-	*/
+#pragma region Flags
 
 	UFUNCTION(BlueprintCallable)
-	void PopulateItems();
+	void AddFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	void ListModifiers();
+	bool HasFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	void LoadNotes();
+	void RemoveFlag(FGameplayTag Flag);
+
+	UFUNCTION(BlueprintCallable)
+	void AddItem(FGameplayTagContainer ItemTag);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveItem(FGameplayTagContainer ItemTag);
+
+#pragma endregion Flags
+
 };

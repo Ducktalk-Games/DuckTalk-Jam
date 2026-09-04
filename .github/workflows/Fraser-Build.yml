@@ -1,26 +1,35 @@
 name: Build UE Proj (Fraser)
-
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-
 permissions:
   contents: write
-
+  actions: write
 jobs:
+  watchdog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel run if it exceeds 30 minutes (including queue time)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep 1800
+          status=$(gh run view ${{ github.run_id }} --repo ${{ github.repository }} --json status -q .status)
+          if [ "$status" != "completed" ]; then
+            echo "Run exceeded 30 minutes total (queue + build). Cancelling."
+            gh run cancel ${{ github.run_id }} --repo ${{ github.repository }}
+          fi
 
   build:
     runs-on: [self-hosted, Windows, X64, fraser-build]
     timeout-minutes: 30
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           lfs: true
-
       - name: Cook, Stage & Package UE Project
         uses: OrchidIsle/UE5-Build-Project@latest
         with:
@@ -41,38 +50,31 @@ jobs:
           ENCRYPT_INI: false
           DELETE_PDB: false
           ANTICHEAT_ENABLED: false
-
       - name: Zip Build
         shell: powershell
         run: |
           $zip = "${{ github.workspace }}\DuckTalkJam-Win64.zip"
-
           if (Test-Path $zip) {
               Remove-Item $zip -Force
           }
-
           Compress-Archive `
             -Path "D:\Game-Jams\Builds\*" `
             -DestinationPath $zip
-
       - name: Upload Build
         uses: actions/upload-artifact@v4
         with:
           name: DuckTalkJam-Win64
           path: ${{ github.workspace }}\DuckTalkJam-Win64.zip
 
-
   release:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
       - name: Download Build
         uses: actions/download-artifact@v4
         with:
           name: DuckTalkJam-Win64
           path: release
-
       - name: Create Release
         uses: softprops/action-gh-release@v3
         with:
