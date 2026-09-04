@@ -18,35 +18,6 @@ public:
 	// Sets default values for this character's properties
 	AKioskCharacter();
 
-#pragma region Clothing
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<USceneComponent> HatRoot;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<UStaticMeshComponent> HatMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<USceneComponent> GlassesRoot;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<UStaticMeshComponent> GlassesMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<USceneComponent> BeardRoot;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<UStaticMeshComponent> BeardMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<USceneComponent> PatchRoot;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<UStaticMeshComponent> PatchMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<USceneComponent> TieRoot;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Clothing|Components")
-	TObjectPtr<UStaticMeshComponent> TieMesh;
-
-#pragma endregion
-
 	UPROPERTY(BlueprintReadOnly, Category = "Player Reference")
 	TObjectPtr<APlayerBase> PlayerReference;
 

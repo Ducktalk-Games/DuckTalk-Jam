@@ -138,9 +138,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterInProgress = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FGameplayTag, UStaticMesh*> AccessoryMap;
-
 #pragma endregion Characters
 
 #pragma region Rules
