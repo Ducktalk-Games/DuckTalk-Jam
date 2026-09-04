@@ -12,7 +12,7 @@
 class AKioskState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueEnded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueEnded, bool, b_WasPhoneDialogue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChoiceWithFunction, EChoiceFunction, Function);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
@@ -90,9 +90,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue|Events")
 	FOnChoiceWithFunction OnChoiceWithFunction;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
-	bool b_WasPhoneDialogue = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	bool b_IsInDialogue = false;

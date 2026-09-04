@@ -30,5 +30,8 @@ struct DUCKTALKJAM_API FF_DialogueRow : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     TArray<FF_DialogueChoice> Choices;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    bool b_IsPhoneCallDialogue = false;
+
     FF_DialogueRow() = default;
 };

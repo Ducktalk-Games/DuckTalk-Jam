@@ -46,7 +46,6 @@ void UAC_DialogueSystem::StartDialogue()
 
 	CurrentNode = EntryRow;
 	b_IsInDialogue = true;
-	b_WasPhoneDialogue = false;
 	OnDialogueStarted.Broadcast();
 }
 
@@ -71,7 +70,6 @@ void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 	UE_LOG(LogTemp, Log, TEXT("%s: %s"),
 		*RowToAdvance->Speaker.ToString(),
 		*RowToAdvance->DialogueText.ToString());
-	b_WasPhoneDialogue = false;
 	CurrentNode = RowToAdvance;
 }
 
@@ -82,11 +80,11 @@ void UAC_DialogueSystem::GetCurrentNode(FF_DialogueRow& OutNode)
 
 void UAC_DialogueSystem::EndDialogue()
 {
+	OnDialogueEnded.Broadcast(CurrentNode && CurrentNode->b_IsPhoneCallDialogue);
 	b_IsInDialogue = false;
 	CurrentNode = nullptr;
 
 	UE_LOG(LogTemp, Log, TEXT("Dialogue ended."));
-	OnDialogueEnded.Broadcast();
 }
 
 TArray<FF_DialogueChoice> UAC_DialogueSystem::GetChoices()
@@ -116,10 +114,6 @@ void UAC_DialogueSystem::SelectChoice(
 	}
 
 	if (Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
-	if (Choice.ChoiceFunction != EChoiceFunction::None)
-	{
-		b_WasPhoneDialogue = true;
-	}
 	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
 
 	// Then determine whether dialogue continues.
