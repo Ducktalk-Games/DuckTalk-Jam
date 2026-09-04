@@ -92,6 +92,9 @@ public:
 	FOnChoiceWithFunction OnChoiceWithFunction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	bool b_WasPhoneDialogue = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
 	bool b_IsInDialogue = false;
 
 protected:

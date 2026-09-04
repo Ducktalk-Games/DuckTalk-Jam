@@ -46,6 +46,7 @@ void UAC_DialogueSystem::StartDialogue()
 
 	CurrentNode = EntryRow;
 	b_IsInDialogue = true;
+	b_WasPhoneDialogue = false;
 	OnDialogueStarted.Broadcast();
 }
 
@@ -114,6 +115,10 @@ void UAC_DialogueSystem::SelectChoice(
 	}
 
 	if (Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
+	if (Choice.ChoiceFunction != EChoiceFunction::None)
+	{
+		b_WasPhoneDialogue = true;
+	}
 	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
 
 	// Then determine whether dialogue continues.
