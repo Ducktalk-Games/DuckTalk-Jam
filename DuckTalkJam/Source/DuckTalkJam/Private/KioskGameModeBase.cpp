@@ -41,6 +41,7 @@ void AKioskGameModeBase::EndRound()
 {
 	OnEndRound.Broadcast();
 	KioskState->Day++;
+	PrepareForNextRound();
 	SetKioskPhase(EKioskPhase::Setup);
 }
 
@@ -66,18 +67,26 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	if (CurrentPhase == NewPhase) return;
 
 	CurrentPhase = NewPhase;
+
 	switch (CurrentPhase)
 	{
-		case EKioskPhase::None: break;
+		case EKioskPhase::None:
+			break;
+
 		case EKioskPhase::Setup:
 			PrepareForNextRound();
 			break;
-		case EKioskPhase::Playing: StartRound(); break;
-		case EKioskPhase::EndOfDay:
-			PrepareForNextRound();
-			EndRound();
+
+		case EKioskPhase::Playing:
+			StartRound();
 			break;
-		case EKioskPhase::Shopping: break;
+
+		case EKioskPhase::EndOfDay:
+			// Do NOT clear encounter data here.
+			break;
+
+		case EKioskPhase::Shopping:
+			break;
 	}
 
 	OnPhaseChanged.Broadcast(NewPhase);
@@ -208,7 +217,6 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
-	CurrentEncounterCharacter = nullptr;
 	CurrentCharacterDialogueTable = nullptr;
 	CurrentCharacterTraits = FGameplayTagContainer();
 	CurrentCharacterTexture = nullptr;
@@ -232,7 +240,6 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	else PenalizePlayer(Character, CurrentCharacterTraits);                            // should have been let in
 
 	CurrentEncounter = nullptr;
-	CurrentEncounterCharacter = nullptr;
 	b_EncounterInProgress = false;
 	++CurrentEncounterIndex;
 }
