@@ -31,3 +31,13 @@ void AKioskCharacter::StartEncounter_Implementation()
 {
 	// Overridable.
 }
+
+void AKioskCharacter::GrantedEntry_Implementation()
+{
+	// Overridable.
+}
+
+void AKioskCharacter::RejectedEntry_Implementation()
+{
+	// Overridable.
+}

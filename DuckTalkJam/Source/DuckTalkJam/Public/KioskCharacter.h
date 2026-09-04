@@ -24,6 +24,16 @@ public:
 
 	virtual void StartEncounter_Implementation();
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
+	void GrantedEntry();
+
+	virtual void GrantedEntry_Implementation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
+	void RejectedEntry();
+
+	virtual void RejectedEntry_Implementation();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -200,6 +200,8 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
 
+	Character->GrantedEntry();
+
 	if (DoesCharacterViolateRules()) PenalizePlayer(Character, CurrentCharacterTraits); // correctly kept out
 	else RewardPlayer(Character, CurrentCharacterTraits);                               // should have been let in
 
@@ -223,6 +225,8 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
+
+	Character->RejectedEntry();
 
 	if (DoesCharacterViolateRules()) RewardPlayer(Character, CurrentCharacterTraits); // correctly kept out
 	else PenalizePlayer(Character, CurrentCharacterTraits);                            // should have been let in
