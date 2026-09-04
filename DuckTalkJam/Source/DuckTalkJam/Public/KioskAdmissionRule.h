@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "KioskRule.h"
+#include "GameplayTagContainer.h"
 #include "KioskAdmissionRule.generated.h"
 
 /**
@@ -16,9 +17,6 @@ class DUCKTALKJAM_API UKioskAdmissionRule : public UKioskRule
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rule")
-	TArray<TSubclassOf<AKioskCharacter>> ExpectedCharacters;
-
-	virtual bool IsViolatedBy_Implementation(AKioskCharacter* Character) const override;
+	virtual bool IsViolatedBy_Implementation(FGameplayTagContainer Traits) const override;
 	
 };

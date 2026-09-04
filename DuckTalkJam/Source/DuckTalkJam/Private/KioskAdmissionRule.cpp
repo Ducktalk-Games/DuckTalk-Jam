@@ -3,12 +3,7 @@
 
 #include "KioskAdmissionRule.h"
 
-bool UKioskAdmissionRule::IsViolatedBy_Implementation(AKioskCharacter* Character) const
+bool UKioskAdmissionRule::IsViolatedBy_Implementation(FGameplayTagContainer Traits) const
 {
-	if (!Character) return false;
-
-	const TSubclassOf<AKioskCharacter> CharacterClass = Character->GetClass();
-	if (ExpectedCharacters.Contains(CharacterClass)) return false;
-
 	return false;
 }

@@ -4,7 +4,7 @@
 #include "KioskRule.h"
 #include "KioskGameModeBase.h"
 
-bool UKioskRule::IsViolatedBy_Implementation(AKioskCharacter* Character) const
+bool UKioskRule::IsViolatedBy_Implementation(FGameplayTagContainer Traits) const
 {
 	return false;
 }

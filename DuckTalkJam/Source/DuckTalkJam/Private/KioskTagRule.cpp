@@ -2,10 +2,11 @@
 
 
 #include "KioskTagRule.h"
+#include "GameplayTagContainer.h"
 #include "KioskCharacter.h"
 
-bool UKioskTagRule::IsViolatedBy_Implementation(AKioskCharacter* Character) const
+bool UKioskTagRule::IsViolatedBy_Implementation(FGameplayTagContainer Traits) const
 {
-	if (!Character) return false;
-	return Character->Traits.HasTag(ForbiddenTag);
+	if (Traits.IsEmpty()) return false;
+	return Traits.HasTag(ForbiddenTag);
 }

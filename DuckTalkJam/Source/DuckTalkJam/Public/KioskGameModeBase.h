@@ -7,6 +7,7 @@
 #include "KioskGameplayEvent.h"
 #include "KioskRule.h"
 #include "KioskState.h"
+#include "CharacterSex.h"
 #include "KioskGameModeBase.generated.h"
 
 class AKioskCharacter;
@@ -26,8 +27,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPenalizePlayer, AKioskCharacter*, Character);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRewardPlayer, AKioskCharacter*, Character);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPenalizePlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRewardPlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -56,9 +57,6 @@ public:
 	void SetKioskPhase(EKioskPhase NewPhase);
 
 	FTimerHandle EncounterTimerHandle;
-	UFUNCTION(BlueprintCallable)
-	void TryOrchestrateEncounter();
-
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateEncounter(bool& bEncountersLeft);
 
@@ -94,6 +92,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndRound();
 
+	void PrepareForNextRound();
+
 #pragma endregion GameplayEvents
 
 #pragma region Characters
@@ -112,6 +112,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> PayDocks;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CorrectlyLetIn = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 Mistakes = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EncounterInProgress = false;
+
 #pragma endregion Day Progression
 
 	UPROPERTY(BlueprintReadOnly)
@@ -127,16 +136,16 @@ public:
 	TArray<TSubclassOf<AKioskCharacter>> EncounterCharactersLetIn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 CorrectlyLetIn = 0;
+	TObjectPtr<UDataTable> CurrentCharacterDialogueTable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 Mistakes = 0;
-
-	UFUNCTION(BlueprintCallable)
-	void OrchestrateRandomCharacter(AKioskCharacter* Character);
+	FGameplayTagContainer CurrentCharacterTraits;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool b_EncounterInProgress = false;
+	UTexture2D* CurrentCharacterTexture;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FCharacterSex CurrentCharacterSex;
 
 #pragma endregion Characters
 
@@ -155,13 +164,13 @@ public:
 	void TurnAwayCharacter(AKioskCharacter* Character);
 
 	UFUNCTION(BlueprintCallable)
-	bool DoesCharacterViolateRules(AKioskCharacter* Character);
+	bool DoesCharacterViolateRules();
 
 	UFUNCTION(BlueprintCallable)
-	void PenalizePlayer(AKioskCharacter* Character);
+	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
 
 	UFUNCTION(BlueprintCallable)
-	void RewardPlayer(AKioskCharacter* Character);
+	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
 
 #pragma endregion Rules
 
@@ -184,6 +193,7 @@ public:
 #pragma endregion Events
 
 protected:
+
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 };

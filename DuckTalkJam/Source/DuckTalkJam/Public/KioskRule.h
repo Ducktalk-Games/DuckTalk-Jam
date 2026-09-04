@@ -24,7 +24,7 @@ public:
 	FText AmbiguousDescription;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	bool IsViolatedBy(AKioskCharacter* Character) const;
+	bool IsViolatedBy(FGameplayTagContainer Traits) const;
 
-	virtual bool IsViolatedBy_Implementation(AKioskCharacter* Character) const;
+	virtual bool IsViolatedBy_Implementation(FGameplayTagContainer Traits) const;
 };

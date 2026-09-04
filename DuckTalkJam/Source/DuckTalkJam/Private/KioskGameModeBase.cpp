@@ -4,6 +4,7 @@
 #include "KioskGameModeBase.h"
 #include "KioskCharacter.h"
 #include "KioskState.h"
+#include "CharacterSex.h"
 #include "Kismet/GameplayStatics.h"
 
 AKioskGameModeBase::AKioskGameModeBase()
@@ -30,15 +31,10 @@ void AKioskGameModeBase::StartRound()
 {
 	SetKioskPhase(EKioskPhase::Playing);
 	PayDocks.Empty();
-	GetWorldTimerManager().SetTimer(
-		EncounterTimerHandle,
-		this,
-		&AKioskGameModeBase::TryOrchestrateEncounter,
-		SubsequentEncounterDelay,
-		true,
-		FirstEncounterDelay
-	);
 	OnStartRound.Broadcast();
+
+	bool bEncountersLeft = false;
+	OrchestrateEncounter(bEncountersLeft);
 }
 
 void AKioskGameModeBase::EndRound()
@@ -46,6 +42,18 @@ void AKioskGameModeBase::EndRound()
 	OnEndRound.Broadcast();
 	KioskState->Day++;
 	SetKioskPhase(EKioskPhase::Setup);
+}
+
+void AKioskGameModeBase::PrepareForNextRound()
+{
+	CurrentEncounterIndex = 0;
+	CurrentEncounter = nullptr;
+	CurrentEncounterCharacter = nullptr;
+	CurrentCharacterDialogueTable = nullptr;
+	CurrentCharacterTraits = FGameplayTagContainer();
+	CurrentCharacterTexture = nullptr;
+	CurrentCharacterSex = FCharacterSex::Female;
+	b_EncounterInProgress = false;
 }
 
 bool AKioskGameModeBase::IsGamePhase(EKioskPhase Phase) const
@@ -62,17 +70,11 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	{
 		case EKioskPhase::None: break;
 		case EKioskPhase::Setup:
-			CurrentEncounterIndex = 0;
-			CurrentEncounter = nullptr;
-			CurrentEncounterCharacter = nullptr;
-			b_EncounterInProgress = false;
+			PrepareForNextRound();
 			break;
 		case EKioskPhase::Playing: StartRound(); break;
 		case EKioskPhase::EndOfDay:
-			CurrentEncounterIndex = 0;
-			CurrentEncounter = nullptr;
-			CurrentEncounterCharacter = nullptr;
-			b_EncounterInProgress = false;
+			PrepareForNextRound();
 			EndRound();
 			break;
 		case EKioskPhase::Shopping: break;
@@ -81,41 +83,39 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	OnPhaseChanged.Broadcast(NewPhase);
 }
 
-void AKioskGameModeBase::TryOrchestrateEncounter()
-{
-	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress) return;
-
-	bool bEncountersLeft = false;
-	OrchestrateEncounter(bEncountersLeft);
-
-	if (!bEncountersLeft)
-	{
-		GetWorldTimerManager().ClearTimer(EncounterTimerHandle);
-		SetKioskPhase(EKioskPhase::EndOfDay);
-	}
-}
-
 void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 {
 	bEncountersLeft = false;
 
-	if (!IsGamePhase(EKioskPhase::Playing) || EncountersPerDay.IsEmpty()) return;
+	if (!IsGamePhase(EKioskPhase::Playing) || b_EncounterInProgress || EncountersPerDay.IsEmpty()) return;
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
-	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex)) return;
+	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
+	{
+		GetWorldTimerManager().ClearTimer(EncounterTimerHandle);
+		SetKioskPhase(EKioskPhase::EndOfDay);
+		return;
+	}
 
 	TSubclassOf<AKioskCharacter> CharacterClass = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterClass;
 	if (!CharacterClass) return;
+
+	TObjectPtr<UDataTable> CharacterDialogueTable = DayConfig->CharacterOrder[CurrentEncounterIndex].CharacterConversationTable;
+	if (!CharacterDialogueTable) return;
+
+	FGameplayTagContainer CharacterTraits = DayConfig->CharacterOrder[CurrentEncounterIndex].Traits;
+	if (CharacterTraits.IsEmpty()) return;
+
+	UTexture2D* CharacterTexture = DayConfig->CharacterOrder[CurrentEncounterIndex].CurrentCharacterTexture;
+	if (!CharacterTexture) return;
+
+	FCharacterSex CharacterSex = DayConfig->CharacterOrder[CurrentEncounterIndex].Sex;
 
 	const bool bHasMoreEncountersToday = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
 	bool bHasMoreDays = false;
 	for (const auto& Pair : EncountersPerDay)
 	{
-		if (Pair.Key > KioskState->Day)
-		{
-			bHasMoreDays = true;
-			break;
-		}
+		if (Pair.Key > KioskState->Day) { bHasMoreDays = true; break; }
 	}
 
 	bEncountersLeft = bHasMoreEncountersToday || bHasMoreDays;
@@ -129,6 +129,10 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 
 	CurrentEncounter = CharacterClass;
 	CurrentEncounterCharacter = InWorldCharacter;
+	CurrentCharacterDialogueTable = CharacterDialogueTable;
+	CurrentCharacterTraits = CharacterTraits;
+	CurrentCharacterTexture = CharacterTexture;
+	CurrentCharacterSex = CharacterSex;
 	b_EncounterInProgress = true;
 
 	OnEncounterStarted.Broadcast(InWorldCharacter);
@@ -191,26 +195,28 @@ void AKioskGameModeBase::ProcessActiveEvents()
 	b_EventHappening = !ActiveEvents.IsEmpty();
 }
 
-void AKioskGameModeBase::OrchestrateRandomCharacter(AKioskCharacter* Character)
-{
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
-
-}
-
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
 
-	if (DoesCharacterViolateRules(Character)) PenalizePlayer(Character);
-	else RewardPlayer(Character);
+	if (DoesCharacterViolateRules()) PenalizePlayer(Character, CurrentCharacterTraits); // correctly kept out
+	else RewardPlayer(Character, CurrentCharacterTraits);                               // should have been let in
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
 	CurrentEncounterCharacter = nullptr;
+	CurrentCharacterDialogueTable = nullptr;
+	CurrentCharacterTraits = FGameplayTagContainer();
+	CurrentCharacterTexture = nullptr;
+	CurrentCharacterSex = FCharacterSex::Female;
 	b_EncounterInProgress = false;
+
 	++CurrentEncounterIndex;
+
+	bool bEncountersLeft = false;
+	OrchestrateEncounter(bEncountersLeft);
 }
 
 void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
@@ -218,8 +224,8 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!CurrentEncounter || !Character) return;
 
-	if (DoesCharacterViolateRules(Character)) RewardPlayer(Character);   // correctly kept out
-	else PenalizePlayer(Character);                                     // should have been let in
+	if (DoesCharacterViolateRules()) RewardPlayer(Character, CurrentCharacterTraits); // correctly kept out
+	else PenalizePlayer(Character, CurrentCharacterTraits);                            // should have been let in
 
 	CurrentEncounter = nullptr;
 	CurrentEncounterCharacter = nullptr;
@@ -227,25 +233,24 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	++CurrentEncounterIndex;
 }
 
-bool AKioskGameModeBase::DoesCharacterViolateRules(AKioskCharacter* Character)
+bool AKioskGameModeBase::DoesCharacterViolateRules()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return false;
-	if (!Character) return false;
 
 	for (UKioskRule* Rule : AppliedRules)
 	{
-		if (Rule && Rule->IsViolatedBy(Character)) return true;
+		if (Rule && Rule->IsViolatedBy(CurrentCharacterTraits)) return true;
 	}
 
 	return false;
 }
 
-void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character)
+void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
 {
-	OnPenalizePlayer.Broadcast(Character);
+	OnPenalizePlayer.Broadcast(Character, Traits);
 }
 
-void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character)
+void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
 {
-	OnRewardPlayer.Broadcast(Character);
+	OnRewardPlayer.Broadcast(Character, Traits);
 }

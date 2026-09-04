@@ -19,5 +19,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag ForbiddenTag;
 
-	virtual bool IsViolatedBy_Implementation(AKioskCharacter* Character) const override;
+	virtual bool IsViolatedBy_Implementation(FGameplayTagContainer Traits) const override;
 };
