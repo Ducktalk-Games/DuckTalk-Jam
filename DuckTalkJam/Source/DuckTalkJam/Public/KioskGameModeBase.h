@@ -18,6 +18,7 @@ enum class EKioskPhase : uint8
 {
 	None 		UMETA(DisplayName = "None"),
 	Setup		UMETA(DisplayName = "Setup"),
+	StartOfDay	UMETA(DisplayName = "Start Of Day"),
 	Playing		UMETA(DisplayName = "Playing"),
 	EndOfDay	UMETA(DisplayName = "End Of Day"),
 	Shopping	UMETA(DisplayName = "Shopping")
@@ -108,16 +109,16 @@ public:
 	TMap<int32, FDayEncounterConfig> EncountersPerDay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CoinPenalty = 20.0f;
+	float DayWage = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float CoinReward = 50.0f;
+	float MistakePenalty = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> PayDocks;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 CorrectlyLetIn = 0;
+	int32 CorrectlyProcessed = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 Mistakes = 0;
@@ -169,6 +170,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
+
+	UFUNCTION(BlueprintCallable)
+	void AddPayDock(FName DockName, float Amount);
 
 #pragma endregion Rules
 

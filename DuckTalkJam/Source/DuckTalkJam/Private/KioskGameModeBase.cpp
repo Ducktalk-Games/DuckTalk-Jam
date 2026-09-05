@@ -39,8 +39,14 @@ void AKioskGameModeBase::StartRound()
 
 void AKioskGameModeBase::EndRound()
 {
+	KioskState->Coins = FMath::Max(
+		KioskState->Coins + DayWage - (Mistakes * MistakePenalty),
+		0
+	);
+	++KioskState->Day;
+
 	OnEndRound.Broadcast();
-	KioskState->Day++;
+
 	PrepareForNextRound();
 	SetKioskPhase(EKioskPhase::Setup);
 }
@@ -68,19 +74,14 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	{
 		case EKioskPhase::None:
 			break;
-
 		case EKioskPhase::Setup:
 			PrepareForNextRound();
 			break;
-
 		case EKioskPhase::Playing:
 			StartRound();
 			break;
-
 		case EKioskPhase::EndOfDay:
-			// Do NOT clear encounter data here.
 			break;
-
 		case EKioskPhase::Shopping:
 			break;
 	}
@@ -125,12 +126,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 
 	if (!InWorldCharacter)
 	{
-		UE_LOG(
-			LogTemp,
-			Warning,
-			TEXT("No in-world actor found for %s"),
-			*CharacterClass->GetName()
-		);
+		UE_LOG(LogTemp, Warning, TEXT("No in-world actor found for %s"), *CharacterClass->GetName());
 		return;
 	}
 
@@ -207,8 +203,10 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 
 	Character->GrantedEntry();
 
-	if (DoesCharacterViolateRules()) PenalizePlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
-	else RewardPlayer(Character, CurrentCharacterEntry.Traits);                               // should have been let in
+	if (DoesCharacterViolateRules())
+		PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been kept out
+	else
+		RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly let in
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
@@ -229,13 +227,19 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 
 	Character->RejectedEntry();
 
-	if (DoesCharacterViolateRules()) RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
-	else PenalizePlayer(Character, CurrentCharacterEntry.Traits);                            // should have been let in
+	if (DoesCharacterViolateRules())
+		RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
+	else
+		PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been let in
 
 	CurrentEncounter = nullptr;
 	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
+
 	++CurrentEncounterIndex;
+
+	bool bEncountersLeft = false;
+	OrchestrateEncounter(bEncountersLeft);
 }
 
 bool AKioskGameModeBase::DoesCharacterViolateRules()
@@ -252,12 +256,22 @@ bool AKioskGameModeBase::DoesCharacterViolateRules()
 
 void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
 {
+	++Mistakes;
 	OnPenalizePlayer.Broadcast(Character, Traits);
 }
 
 void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
 {
+	++CorrectlyProcessed;
 	OnRewardPlayer.Broadcast(Character, Traits);
+}
+
+void AKioskGameModeBase::AddPayDock(FName DockName, float Amount)
+{
+	if (!PayDocks.Contains(DockName))
+	{
+		PayDocks.Add(DockName, Amount);
+	}
 }
 
 bool AKioskGameModeBase::HasEncountersLeft() const

@@ -82,8 +82,9 @@ void UAC_DialogueSystem::EndDialogue()
 {
 	// MVP ONLY; VERY HACKY WAY
 	OnDialogueEnded.Broadcast(CurrentNode && CurrentNode->b_IsPhoneCallDialogue);
-	b_IsInDialogue = false;
 	CurrentNode = nullptr;
+	DialogueTable = nullptr;
+	b_IsInDialogue = false;
 
 	UE_LOG(LogTemp, Log, TEXT("Dialogue ended."));
 }
@@ -115,17 +116,16 @@ void UAC_DialogueSystem::SelectChoice(
 	}
 
 	if (Choice.Flag.IsValid()) KioskState->AddFlag(Choice.Flag);
-	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
 
-	// Then determine whether dialogue continues.
-	if (Choice.NextRow.IsNone())
+	const bool bShouldEndDialogue = Choice.NextRow.IsNone();
+	if (bShouldEndDialogue)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Choice has no next row. Ending dialogue."));
 		EndDialogue();
-		return;
 	}
+	else OutNextRow = Choice.NextRow;
 
-	OutNextRow = Choice.NextRow;
+	OnChoiceWithFunction.Broadcast(Choice.ChoiceFunction);
 }
 
 bool UAC_DialogueSystem::FindChoiceWithFlagInTable(
