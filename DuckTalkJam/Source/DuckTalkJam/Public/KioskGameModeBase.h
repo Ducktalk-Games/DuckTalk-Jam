@@ -41,7 +41,10 @@ public:
 	AKioskGameModeBase();
 
 	UPROPERTY()
-	TObjectPtr<AKioskState> KioskState;
+	UKioskState* KioskState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	int32 Day = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	EKioskPhase CurrentPhase = EKioskPhase::None;

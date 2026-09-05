@@ -6,25 +6,26 @@
 #include "Engine/DataTable.h"
 #include "F_DialogueRow.h"
 #include "GameplayTagContainer.h"
+#include "KioskState.h"
 #include "Components/ActorComponent.h"
 #include "AC_DialogueSystem.generated.h"
 
-class AKioskState;
+class UKioskState;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueStarted);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueEnded, bool, b_WasPhoneDialogue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueEnded, bool, bWasPhoneCall);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChoiceWithFunction, EChoiceFunction, Function);
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class DUCKTALKJAM_API UAC_DialogueSystem : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UAC_DialogueSystem();
 
 	UPROPERTY()
-	TObjectPtr<AKioskState> KioskState;
+	UKioskState* KioskState;
 
 	UPROPERTY(
 		EditAnywhere,
@@ -33,6 +34,9 @@ public:
 		meta = (ToolTip = "The Data Table containing all dialogue rows for this character.")
 	)
 	TObjectPtr<UDataTable> DialogueTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+	FName EntryRowName = FName("DIAG_INTRO_001");
 
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
 	FOnDialogueStarted OnDialogueStarted;
@@ -98,7 +102,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

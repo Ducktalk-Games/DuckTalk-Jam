@@ -19,7 +19,7 @@ UAC_DialogueSystem::UAC_DialogueSystem()
 void UAC_DialogueSystem::BeginPlay()
 {
 	Super::BeginPlay();
-	KioskState = GetWorld()->GetGameState<AKioskState>();
+	KioskState = GetWorld()->GetGameInstance<UKioskState>();
 }
 
 // Called every frame

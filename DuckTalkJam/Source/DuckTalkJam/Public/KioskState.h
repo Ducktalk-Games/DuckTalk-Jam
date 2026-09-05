@@ -4,21 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "DayEncounterConfig.h"
-#include "GameFramework/GameStateBase.h"
+#include "Engine/GameInstance.h"
 #include "KioskState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DUCKTALKJAM_API AKioskState : public AGameStateBase
+class DUCKTALKJAM_API UKioskState : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	int32 Day = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;

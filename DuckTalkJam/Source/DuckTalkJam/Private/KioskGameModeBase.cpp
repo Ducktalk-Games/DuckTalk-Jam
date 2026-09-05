@@ -16,7 +16,7 @@ void AKioskGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	KioskState = GetGameState<AKioskState>();
+	KioskState = GetGameInstance<UKioskState>();
 	SetKioskPhase(EKioskPhase::Setup);
 }
 
@@ -43,7 +43,7 @@ void AKioskGameModeBase::EndRound()
 		KioskState->Coins + DayWage - (Mistakes * MistakePenalty),
 		0
 	);
-	++KioskState->Day;
+	++Day;
 
 	OnEndRound.Broadcast();
 
@@ -101,7 +101,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 		return;
 	}
 
-	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
 	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
 	{
 		OnNoEncounters.Broadcast();
@@ -160,7 +160,7 @@ void AKioskGameModeBase::OrchestrateRules()
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (!KioskState) return;
 
-	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
 	if (!DayConfig) return;
 
 	AppliedRules.Empty();
@@ -281,7 +281,7 @@ bool AKioskGameModeBase::HasEncountersLeft() const
 		return false;
 	}
 
-	if (const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day))
+	if (const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day))
 	{
 		if (DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1))
 		{
@@ -291,7 +291,7 @@ bool AKioskGameModeBase::HasEncountersLeft() const
 
 	for (const auto& Pair : EncountersPerDay)
 	{
-		if (Pair.Key > KioskState->Day && !Pair.Value.CharacterOrder.IsEmpty())
+		if (Pair.Key > Day && !Pair.Value.CharacterOrder.IsEmpty())
 		{
 			return true;
 		}
