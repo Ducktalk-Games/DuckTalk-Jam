@@ -49,10 +49,7 @@ void AKioskGameModeBase::PrepareForNextRound()
 {
 	CurrentEncounterIndex = 0;
 	CurrentEncounter = nullptr;
-	CurrentCharacterDialogueTable = nullptr;
-	CurrentCharacterTraits = FGameplayTagContainer();
-	CurrentCharacterTexture = nullptr;
-	CurrentCharacterSex = FCharacterSex::Female;
+	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 }
 
@@ -139,10 +136,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 
 	CurrentEncounter = CharacterClass;
 	CurrentEncounterCharacter = InWorldCharacter;
-	CurrentCharacterDialogueTable = CharacterDialogueTable;
-	CurrentCharacterTraits = CharacterTraits;
-	CurrentCharacterTexture = CharacterTexture;
-	CurrentCharacterSex = CharacterSex;
+	CurrentCharacterEntry = EncounterData;
 	b_EncounterInProgress = true;
 
 	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
@@ -209,20 +203,17 @@ void AKioskGameModeBase::ProcessActiveEvents()
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (!CurrentEncounter || !Character) return;
+	if (!CurrentCharacterEntry.CharacterClass || !Character) return;
 
 	Character->GrantedEntry();
 
-	if (DoesCharacterViolateRules()) PenalizePlayer(Character, CurrentCharacterTraits); // correctly kept out
-	else RewardPlayer(Character, CurrentCharacterTraits);                               // should have been let in
+	if (DoesCharacterViolateRules()) PenalizePlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
+	else RewardPlayer(Character, CurrentCharacterEntry.Traits);                               // should have been let in
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
-	CurrentCharacterDialogueTable = nullptr;
-	CurrentCharacterTraits = FGameplayTagContainer();
-	CurrentCharacterTexture = nullptr;
-	CurrentCharacterSex = FCharacterSex::Female;
+	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 
 	++CurrentEncounterIndex;
@@ -234,14 +225,15 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (!CurrentEncounter || !Character) return;
+	if (!CurrentCharacterEntry.CharacterClass || !Character) return;
 
 	Character->RejectedEntry();
 
-	if (DoesCharacterViolateRules()) RewardPlayer(Character, CurrentCharacterTraits); // correctly kept out
-	else PenalizePlayer(Character, CurrentCharacterTraits);                            // should have been let in
+	if (DoesCharacterViolateRules()) RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
+	else PenalizePlayer(Character, CurrentCharacterEntry.Traits);                            // should have been let in
 
 	CurrentEncounter = nullptr;
+	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 	++CurrentEncounterIndex;
 }
@@ -252,7 +244,7 @@ bool AKioskGameModeBase::DoesCharacterViolateRules()
 
 	for (UKioskRule* Rule : AppliedRules)
 	{
-		if (Rule && Rule->IsViolatedBy(CurrentCharacterTraits)) return true;
+		if (Rule && Rule->IsViolatedBy(CurrentCharacterEntry.Traits)) return true;
 	}
 
 	return false;

@@ -143,16 +143,7 @@ public:
 	TArray<TSubclassOf<AKioskCharacter>> EncounterCharactersLetIn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UDataTable> CurrentCharacterDialogueTable;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTagContainer CurrentCharacterTraits;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture2D* CurrentCharacterTexture;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FCharacterSex CurrentCharacterSex;
+	FKioskCharacterEntry CurrentCharacterEntry;
 
 #pragma endregion Characters
 
