@@ -9,7 +9,7 @@
  *  Sex? Woman, man… sometimes goat.
  */
 UENUM(BlueprintType)
-enum class FCharacterSex : uint8
+enum class ECharacterSex : uint8
 {
 	Male,
 	Female

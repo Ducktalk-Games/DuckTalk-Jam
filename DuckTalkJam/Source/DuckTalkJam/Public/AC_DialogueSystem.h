@@ -60,7 +60,7 @@ public:
 		meta = (ToolTip = "Gets the current dialogue node.")
 	)
 	void GetCurrentNode(FF_DialogueRow& OutNode);
-	FF_DialogueRow* CurrentNode;
+	FF_DialogueRow* CurrentNode = nullptr;
 	FF_DialogueRow* ResolveDialogueRow(FName RowName);
 
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
