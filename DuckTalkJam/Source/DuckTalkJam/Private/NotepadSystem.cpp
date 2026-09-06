@@ -12,9 +12,20 @@ void UNotepadSystem::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UNotepadSystem::SetNotepadText(const FString& NewText)
+FString UNotepadSystem::SetNotepadText(const FString& NewText)
 {
-	NotepadText = NewText;
+	FString LimitedText = NewText;
+	TArray<FString> Lines;
+	LimitedText.ParseIntoArrayLines(Lines, false);
+
+	if (Lines.Num() > MaxLines)
+	{
+		Lines.SetNum(MaxLines);
+		LimitedText = FString::Join(Lines, TEXT("\n"));
+	}
+
+	NotepadText = LimitedText;
+	return NotepadText;
 }
 
 void UNotepadSystem::ClearNotepad()
