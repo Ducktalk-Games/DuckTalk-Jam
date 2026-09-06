@@ -61,6 +61,7 @@ public:
 	)
 	void GetCurrentNode(FF_DialogueRow& OutNode);
 	FF_DialogueRow* CurrentNode;
+	FF_DialogueRow* ResolveDialogueRow(FName RowName);
 
 	UPROPERTY(BlueprintAssignable, Category = "Dialogue")
 	FOnDialogueEnded OnDialogueEnded;

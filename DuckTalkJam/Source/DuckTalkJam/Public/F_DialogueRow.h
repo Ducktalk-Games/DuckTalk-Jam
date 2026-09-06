@@ -19,6 +19,9 @@ struct DUCKTALKJAM_API FF_DialogueRow : public FTableRowBase
     FText DialogueText;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
+    FGameplayTag RequiredFlag;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
     FText SetsFlag;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dialogue")
