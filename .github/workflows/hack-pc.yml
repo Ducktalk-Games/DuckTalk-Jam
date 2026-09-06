@@ -35,7 +35,7 @@ jobs:
         with:
           RUNUAT_PATH: 'D:\Epic Games\Games\UE_5.8\Engine\Build\BatchFiles\RunUAT.bat'
           UPROJECT_PATH: 'D:\source\repos\DuckTalk-Jam\DuckTalkJam\DuckTalkJam.uproject'
-          BUILD_CONFIG: Development
+          BUILD_CONFIG: Shipping
           PLATFORM: Win64
           CLEAN: true
           COOK: true
