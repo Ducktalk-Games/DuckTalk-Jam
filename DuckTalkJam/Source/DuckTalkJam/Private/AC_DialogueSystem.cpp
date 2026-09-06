@@ -80,8 +80,9 @@ void UAC_DialogueSystem::GetCurrentNode(FF_DialogueRow& OutNode)
 
 void UAC_DialogueSystem::EndDialogue()
 {
-	// MVP ONLY; VERY HACKY WAY
+	// Necessary for phone dialogues to work separately
 	OnDialogueEnded.Broadcast(CurrentNode && CurrentNode->b_IsPhoneCallDialogue);
+	
 	CurrentNode = nullptr;
 	DialogueTable = nullptr;
 	b_IsInDialogue = false;
