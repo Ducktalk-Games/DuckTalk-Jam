@@ -57,6 +57,8 @@ void AKioskGameModeBase::PrepareForNextRound()
 	CurrentEncounter = nullptr;
 	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
+	b_EncounterResolved = false;
+	b_DialogueFinished = false;
 }
 
 bool AKioskGameModeBase::IsGamePhase(EKioskPhase Phase) const
@@ -134,6 +136,9 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 	CurrentEncounterCharacter = InWorldCharacter;
 	CurrentCharacterEntry = EncounterData;
 	b_EncounterInProgress = true;
+
+	b_EncounterResolved = false;
+	b_DialogueFinished = false;
 
 	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
 	OnEncounterStarted.Broadcast(InWorldCharacter);
@@ -215,9 +220,6 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	b_EncounterInProgress = false;
 
 	++CurrentEncounterIndex;
-
-	bool bEncountersLeft = false;
-	OrchestrateEncounter(bEncountersLeft);
 }
 
 void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
@@ -237,6 +239,28 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	b_EncounterInProgress = false;
 
 	++CurrentEncounterIndex;
+}
+
+void AKioskGameModeBase::HandleDialogueEnded(bool bWasPhoneDialogue)
+{
+	if (bWasPhoneDialogue) return;
+	
+	b_DialogueFinished = true;
+	TryAdvanceEncounter();
+}
+
+void AKioskGameModeBase::HandleEncounterExitFinished()
+{
+	b_EncounterResolved = true;
+	TryAdvanceEncounter();
+}
+
+void AKioskGameModeBase::TryAdvanceEncounter()
+{
+	if (!b_EncounterResolved || !b_DialogueFinished)return;
+
+	b_EncounterResolved = false;
+	b_DialogueFinished = false;
 
 	bool bEncountersLeft = false;
 	OrchestrateEncounter(bEncountersLeft);

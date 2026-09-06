@@ -129,6 +129,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterInProgress = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EncounterResolved = false;
+
+	UPROPERTY(Editanywhere, BlueprintReadWrite)
+	bool b_DialogueFinished = false;
+
+	void TryAdvanceEncounter();
+
+	UFUNCTION(BlueprintCallable, Category = "Encounter")
+	void HandleDialogueEnded(bool bWasPhoneDialogue);
+
+	UFUNCTION(BlueprintCallable, Category = "Encounter")
+	void HandleEncounterExitFinished();
+
 	UFUNCTION(BlueprintPure)
 	bool HasEncountersLeft() const;
 
