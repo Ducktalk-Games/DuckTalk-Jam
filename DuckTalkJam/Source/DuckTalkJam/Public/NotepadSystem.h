@@ -15,7 +15,7 @@ public:
 	UNotepadSystem();
 
 	UFUNCTION(BlueprintCallable, Category = "Notepad")
-	void SetNotepadText(const FString& NewText);
+	FString SetNotepadText(const FString& NewText);
 
 	UFUNCTION(BlueprintPure, Category = "Notepad")
 	const FString& GetNotepadText() const
@@ -28,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Notepad")
 	TArray<FString> GetLines() const;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notepad")
+	int32 MaxLines = 20;
 
 protected:
 	virtual void BeginPlay() override;
