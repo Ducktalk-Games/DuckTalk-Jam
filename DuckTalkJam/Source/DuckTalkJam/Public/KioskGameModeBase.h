@@ -41,7 +41,10 @@ public:
 	AKioskGameModeBase();
 
 	UPROPERTY()
-	TObjectPtr<AKioskState> KioskState;
+	UKioskState* KioskState;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	int32 Day = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	EKioskPhase CurrentPhase = EKioskPhase::None;
@@ -125,6 +128,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterInProgress = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EncounterResolved = false;
+
+	UPROPERTY(Editanywhere, BlueprintReadWrite)
+	bool b_DialogueFinished = false;
+
+	void TryAdvanceEncounter();
+
+	UFUNCTION(BlueprintCallable, Category = "Encounter")
+	void HandleDialogueEnded(bool bWasPhoneDialogue);
+
+	UFUNCTION(BlueprintCallable, Category = "Encounter")
+	void HandleEncounterExitFinished();
 
 	UFUNCTION(BlueprintPure)
 	bool HasEncountersLeft() const;

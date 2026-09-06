@@ -19,7 +19,7 @@ UAC_DialogueSystem::UAC_DialogueSystem()
 void UAC_DialogueSystem::BeginPlay()
 {
 	Super::BeginPlay();
-	KioskState = GetWorld()->GetGameState<AKioskState>();
+	KioskState = GetWorld()->GetGameInstance<UKioskState>();
 }
 
 // Called every frame
@@ -36,16 +36,18 @@ void UAC_DialogueSystem::StartDialogue()
 		return;
 	}
 
-	FF_DialogueRow* EntryRow = DialogueTable->FindRow<FF_DialogueRow>(FName("DIAG_INTRO_001"), TEXT("Start dialogue startup node lookup"));
+	FF_DialogueRow* EntryRow = ResolveDialogueRow(FName("DIAG_INTRO_001"));
+
 	if (!EntryRow)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Database has no entry row."));
+		UE_LOG(LogTemp, Log, TEXT("No valid dialogue entry row found."));
 		EndDialogue();
 		return;
 	}
 
 	CurrentNode = EntryRow;
 	b_IsInDialogue = true;
+
 	OnDialogueStarted.Broadcast();
 }
 
@@ -59,17 +61,15 @@ void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 		return;
 	}
 
-	FF_DialogueRow* RowToAdvance = DialogueTable->FindRow<FF_DialogueRow>(RowName, TEXT("Dialogue advance lookup"));
+	FF_DialogueRow* RowToAdvance = ResolveDialogueRow(RowName);
 	if (!RowToAdvance)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Row not found. Ending dialogue."));
+		UE_LOG(LogTemp, Log, TEXT("No valid dialogue row found. Ending dialogue."));
 		EndDialogue();
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s: %s"),
-		*RowToAdvance->Speaker.ToString(),
-		*RowToAdvance->DialogueText.ToString());
+	UE_LOG(LogTemp, Log, TEXT("%s: %s"), *RowToAdvance->Speaker.ToString(), *RowToAdvance->DialogueText.ToString());
 	CurrentNode = RowToAdvance;
 }
 
@@ -78,10 +78,44 @@ void UAC_DialogueSystem::GetCurrentNode(FF_DialogueRow& OutNode)
 	OutNode = CurrentNode ? *CurrentNode : FF_DialogueRow();
 }
 
+FF_DialogueRow* UAC_DialogueSystem::ResolveDialogueRow(FName RowName)
+{
+	if (!DialogueTable || RowName.IsNone()) return nullptr;
+
+	TSet<FName> VisitedRows;
+
+	while (!RowName.IsNone())
+	{
+		if (VisitedRows.Contains(RowName))
+		{
+			UE_LOG(LogTemp, Error, TEXT("Circular dialogue NextRow chain detected at '%s'"), *RowName.ToString());
+			return nullptr;
+		}
+
+		VisitedRows.Add(RowName);
+
+		FF_DialogueRow* Row = DialogueTable->FindRow<FF_DialogueRow>(RowName, TEXT("Resolve dialogue row lookup"));
+		if (!Row)
+		{
+			UE_LOG(LogTemp, Error, TEXT("Row '%s' not found in dialogue table."), *RowName.ToString());
+			return nullptr;
+		}
+
+		if (!Row->RequiredFlag.IsValid()) return Row;
+		if (KioskState && KioskState->HasFlag(Row->RequiredFlag)) return Row;
+
+		UE_LOG(LogTemp, Log, TEXT("Skipping dialogue row '%s': missing required flag '%s'."), *RowName.ToString(), *Row->RequiredFlag.ToString());
+		RowName = Row->NextRow;
+	}
+
+	return nullptr;
+}
+
 void UAC_DialogueSystem::EndDialogue()
 {
-	// MVP ONLY; VERY HACKY WAY
+	// Necessary for phone dialogues to work separately
 	OnDialogueEnded.Broadcast(CurrentNode && CurrentNode->b_IsPhoneCallDialogue);
+	
 	CurrentNode = nullptr;
 	DialogueTable = nullptr;
 	b_IsInDialogue = false;

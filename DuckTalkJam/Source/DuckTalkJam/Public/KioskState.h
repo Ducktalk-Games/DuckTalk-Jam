@@ -4,27 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "DayEncounterConfig.h"
-#include "GameFramework/GameStateBase.h"
+#include "Engine/GameInstance.h"
 #include "KioskState.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DUCKTALKJAM_API AKioskState : public AGameStateBase
+class DUCKTALKJAM_API UKioskState : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	int32 Day = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
-	TArray<FGameplayTagContainer> Items;
+	TArray<FGameplayTag> Items;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	bool b_ItemsInitialized = false;
@@ -44,13 +41,13 @@ public:
 	void RemoveFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	void AddItem(FGameplayTagContainer ItemTag);
+	void AddItem(FGameplayTag ItemTag);
 
 	UFUNCTION(BlueprintCallable)
-	bool HasItem(FGameplayTagContainer ItemTag);
+	bool HasItem(FGameplayTag ItemTag);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem(FGameplayTagContainer ItemTag);
+	void RemoveItem(FGameplayTag ItemTag);
 
 #pragma endregion Flags
 
