@@ -15,7 +15,7 @@ struct DUCKTALKJAM_API FKioskCharacterEntry
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FCharacterSex Sex;
+	ECharacterSex Sex = ECharacterSex::Male;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AKioskCharacter> CharacterClass;
@@ -30,6 +30,6 @@ struct DUCKTALKJAM_API FKioskCharacterEntry
 	FGameplayTagContainer Traits;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	UTexture2D* CurrentCharacterTexture;
+	UTexture2D* CurrentCharacterTexture = nullptr;
 
 };

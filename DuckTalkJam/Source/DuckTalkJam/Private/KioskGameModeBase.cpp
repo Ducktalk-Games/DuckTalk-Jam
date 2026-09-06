@@ -123,7 +123,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 	UTexture2D* CharacterTexture = EncounterData.CurrentCharacterTexture;
 	if (!CharacterTexture) return;
 
-	FCharacterSex CharacterSex = EncounterData.Sex;
+	ECharacterSex CharacterSex = EncounterData.Sex;
 	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
 
 	if (!InWorldCharacter)
