@@ -21,7 +21,7 @@ public:
 	float Coins = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
-	TArray<FGameplayTagContainer> Items;
+	TArray<FGameplayTag> Items;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
 	bool b_ItemsInitialized = false;
@@ -41,13 +41,13 @@ public:
 	void RemoveFlag(FGameplayTag Flag);
 
 	UFUNCTION(BlueprintCallable)
-	void AddItem(FGameplayTagContainer ItemTag);
+	void AddItem(FGameplayTag ItemTag);
 
 	UFUNCTION(BlueprintCallable)
-	bool HasItem(FGameplayTagContainer ItemTag);
+	bool HasItem(FGameplayTag ItemTag);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveItem(FGameplayTagContainer ItemTag);
+	void RemoveItem(FGameplayTag ItemTag);
 
 #pragma endregion Flags
 
