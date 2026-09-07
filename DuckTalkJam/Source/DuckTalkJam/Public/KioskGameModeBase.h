@@ -209,6 +209,8 @@ public:
 
 	void ProcessActiveEvents();
 
+	void OnGameplayEventCompleted(AKioskGameplayEvent* Event);
+
 #pragma endregion Events
 
 protected:
