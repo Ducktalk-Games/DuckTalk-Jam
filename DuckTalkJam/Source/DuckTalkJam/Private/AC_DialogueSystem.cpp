@@ -51,6 +51,25 @@ void UAC_DialogueSystem::StartDialogue()
 	OnDialogueStarted.Broadcast();
 }
 
+void UAC_DialogueSystem::AdvanceCurrentDialogue()
+{
+	if (!CurrentNode)
+	{
+		EndDialogue();
+		UE_LOG(LogTemp, Log, TEXT("NO NODE"));
+		return;
+	}
+
+	if (CurrentNode->Choices.Num() > 0)
+	{
+		UE_LOG(LogTemp, Log, TEXT("HAS CHOICES"));
+		return;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("MOVING TO NEXT ROW"));
+	AdvanceDialogue(CurrentNode->NextRow);
+}
+
 void UAC_DialogueSystem::AdvanceDialogue(FName RowName)
 {
 	if (!DialogueTable) return;
