@@ -3,6 +3,16 @@
 
 #include "KioskGameplayEvent.h"
 
+void AKioskGameplayEvent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AKioskGameplayEvent::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+}
+
 void AKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
 {}
 

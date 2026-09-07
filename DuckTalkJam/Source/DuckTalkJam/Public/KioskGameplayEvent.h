@@ -36,4 +36,9 @@ public:
 
 	virtual void StartEvent_Implementation(AKioskGameModeBase* GameMode);
 	virtual bool IsCompleted_Implementation(AKioskGameModeBase* GameMode) const;
+
+protected:
+
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 };
