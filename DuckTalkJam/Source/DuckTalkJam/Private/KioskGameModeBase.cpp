@@ -246,6 +246,17 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	GetWorldTimerManager().SetTimer(
+		TimerBetweenEncounters,
+		this,
+		&AKioskGameModeBase::AdvanceEncounter,
+		60.0f,
+		false
+	);
+}
+
+void AKioskGameModeBase::AdvanceEncounter()
+{
 	bool bEncountersLeft = false;
 	OrchestrateEncounter(bEncountersLeft);
 }
