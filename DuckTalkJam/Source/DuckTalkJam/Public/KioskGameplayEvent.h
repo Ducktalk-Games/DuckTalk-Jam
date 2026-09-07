@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "KioskGameplayEvent.generated.h"
 
 class AKioskGameModeBase;
 
-UCLASS(Abstract, Blueprintable)
-class DUCKTALKJAM_API UKioskGameplayEvent : public UObject
+UCLASS()
+class DUCKTALKJAM_API AKioskGameplayEvent : public AActor
 {
 	GENERATED_BODY()
 

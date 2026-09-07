@@ -196,13 +196,13 @@ public:
 #pragma region Events
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UKioskGameplayEvent>> PossibleEvents;
+	TArray<TSubclassOf<AKioskGameplayEvent>> PossibleEvents;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UKioskGameplayEvent>> ActiveEvents;
+	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveEvents;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UKioskGameplayEvent>> HappenedEvents;
+	TArray<TObjectPtr<AKioskGameplayEvent>> HappenedEvents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;

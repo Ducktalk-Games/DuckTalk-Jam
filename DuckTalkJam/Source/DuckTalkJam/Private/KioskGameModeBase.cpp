@@ -5,6 +5,7 @@
 #include "KioskCharacter.h"
 #include "KioskState.h"
 #include "CharacterSex.h"
+#include "KioskGameplayEvent.h"
 #include "Kismet/GameplayStatics.h"
 
 AKioskGameModeBase::AKioskGameModeBase()
@@ -144,22 +145,6 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 	OnEncounterStarted.Broadcast(InWorldCharacter);
 }
 
-void AKioskGameModeBase::OrchestrateEvent()
-{
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
-
-	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
-	TSubclassOf<UKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
-
-	UKioskGameplayEvent* Event = NewObject<UKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
-	if (!Event) return;
-
-	Event->StartEvent(this);
-	b_EventHappening = true;
-	ActiveEvents.Add(Event);
-}
-
 void AKioskGameModeBase::OrchestrateRules()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
@@ -177,13 +162,29 @@ void AKioskGameModeBase::OrchestrateRules()
 	}
 }
 
+void AKioskGameModeBase::OrchestrateEvent()
+{
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
+
+	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
+	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
+
+	AKioskGameplayEvent* Event = NewObject<AKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
+	if (!Event) return;
+
+	Event->StartEvent(this);
+	b_EventHappening = true;
+	ActiveEvents.Add(Event);
+}
+
 void AKioskGameModeBase::ProcessActiveEvents()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 
 	for (int32 i = ActiveEvents.Num() - 1; i >= 0; --i)
 	{
-		UKioskGameplayEvent* Event = ActiveEvents[i];
+		AKioskGameplayEvent* Event = ActiveEvents[i];
 
 		if (!Event)
 		{

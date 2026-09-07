@@ -21,7 +21,7 @@ void UKioskState::RemoveFlag(FGameplayTag Flag)
 
 void UKioskState::AddItem(FGameplayTag ItemTag)
 {
-	if (!Items.Contains(ItemTag)) Items.Add(ItemTag);
+	if (!HasItem(ItemTag)) Items.Add(ItemTag);
 }
 
 bool UKioskState::HasItem(FGameplayTag ItemTag)
@@ -32,5 +32,5 @@ bool UKioskState::HasItem(FGameplayTag ItemTag)
 
 void UKioskState::RemoveItem(FGameplayTag ItemTag)
 {
-	if (Items.Contains(ItemTag)) Items.Remove(ItemTag);
+	if (HasItem(ItemTag)) Items.Remove(ItemTag);
 }

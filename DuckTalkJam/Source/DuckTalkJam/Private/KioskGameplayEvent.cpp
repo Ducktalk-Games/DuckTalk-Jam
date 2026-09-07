@@ -3,10 +3,10 @@
 
 #include "KioskGameplayEvent.h"
 
-void UKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
+void AKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
 {}
 
-bool UKioskGameplayEvent::IsCompleted_Implementation(AKioskGameModeBase* GameMode) const
+bool AKioskGameplayEvent::IsCompleted_Implementation(AKioskGameModeBase* GameMode) const
 {
 	return false;
 }
