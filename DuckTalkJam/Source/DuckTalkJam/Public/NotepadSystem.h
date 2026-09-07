@@ -32,6 +32,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notepad")
 	int32 MaxLines = 20;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notepad")
+	int32 MaxCharacters = 650;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notepad")
+	int32 MaxCharactersPerLine = 30;
+
 protected:
 	virtual void BeginPlay() override;
 
