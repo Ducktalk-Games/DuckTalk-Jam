@@ -24,6 +24,14 @@ enum class EKioskPhase : uint8
 	Shopping	UMETA(DisplayName = "Shopping")
 };
 
+UENUM(BlueprintType)
+enum class ERuleEvaluation : uint8
+{
+	Forbidden,
+	RequiredToEnter,
+	NoApplicableRule
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNoEncounters);
@@ -184,6 +192,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool DoesCharacterViolateRules();
+
+	ERuleEvaluation EvaluateCharacterRules() const;
 
 	UFUNCTION(BlueprintCallable)
 	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
