@@ -14,15 +14,32 @@ void UNotepadSystem::BeginPlay()
 
 FString UNotepadSystem::SetNotepadText(const FString& NewText)
 {
-	FString LimitedText = NewText;
-	TArray<FString> Lines;
-	LimitedText.ParseIntoArrayLines(Lines, false);
+	TArray<FString> InputLines;
+	NewText.ParseIntoArrayLines(InputLines, false);
 
-	if (Lines.Num() > MaxLines)
+	TArray<FString> WrappedLines;
+	for (const FString& Line : InputLines)
 	{
-		Lines.SetNum(MaxLines);
-		LimitedText = FString::Join(Lines, TEXT("\n"));
+		if (Line.IsEmpty())
+		{
+			WrappedLines.Add(TEXT(""));
+			continue;
+		}
+
+		int32 StartIndex = 0;
+		while (StartIndex < Line.Len())
+		{
+			if (WrappedLines.Num() >= MaxLines) break;
+			const int32 CharactersToTake = FMath::Min(MaxCharactersPerLine, Line.Len() - StartIndex);
+			WrappedLines.Add(Line.Mid(StartIndex, CharactersToTake));
+			StartIndex += CharactersToTake;
+		}
+
+		if (WrappedLines.Num() >= MaxLines) break;
 	}
+
+	FString LimitedText = FString::Join(WrappedLines, TEXT("\n"));
+	if (LimitedText.Len() > MaxCharacters) LimitedText.LeftInline(MaxCharacters);
 
 	NotepadText = LimitedText;
 	return NotepadText;

@@ -5,6 +5,7 @@
 #include "KioskCharacter.h"
 #include "KioskState.h"
 #include "CharacterSex.h"
+#include "KioskGameplayEvent.h"
 #include "Kismet/GameplayStatics.h"
 
 AKioskGameModeBase::AKioskGameModeBase()
@@ -23,8 +24,6 @@ void AKioskGameModeBase::BeginPlay()
 void AKioskGameModeBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	ProcessActiveEvents();
 }
 
 void AKioskGameModeBase::StartRound()
@@ -144,22 +143,6 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 	OnEncounterStarted.Broadcast(InWorldCharacter);
 }
 
-void AKioskGameModeBase::OrchestrateEvent()
-{
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
-
-	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
-	TSubclassOf<UKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
-
-	UKioskGameplayEvent* Event = NewObject<UKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
-	if (!Event) return;
-
-	Event->StartEvent(this);
-	b_EventHappening = true;
-	ActiveEvents.Add(Event);
-}
-
 void AKioskGameModeBase::OrchestrateRules()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
@@ -177,28 +160,29 @@ void AKioskGameModeBase::OrchestrateRules()
 	}
 }
 
-void AKioskGameModeBase::ProcessActiveEvents()
+void AKioskGameModeBase::OrchestrateEvent()
 {
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
-	for (int32 i = ActiveEvents.Num() - 1; i >= 0; --i)
-	{
-		UKioskGameplayEvent* Event = ActiveEvents[i];
+	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
+	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
 
-		if (!Event)
-		{
-			ActiveEvents.RemoveAt(i);
-			continue;
-		}
+	AKioskGameplayEvent* Event = NewObject<AKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
+	if (!Event) return;
 
-		if (Event->IsCompleted(this))
-		{
-			HappenedEvents.Add(Event);
-			ActiveEvents.RemoveAt(i);
-		}
-	}
+	Event->StartEvent(this);
+	b_EventHappening = true;
+	ActiveEvents.Add(Event);
+}
 
-	b_EventHappening = !ActiveEvents.IsEmpty();
+void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
+{
+	if (!IsValid(Event)) return;
+
+	ActiveEvents.Remove(Event);
+	HappenedEvents.Add(Event);
+	Event->Destroy();
 }
 
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
@@ -262,6 +246,17 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	GetWorldTimerManager().SetTimer(
+		TimerBetweenEncounters,
+		this,
+		&AKioskGameModeBase::AdvanceEncounter,
+		60.0f,
+		false
+	);
+}
+
+void AKioskGameModeBase::AdvanceEncounter()
+{
 	bool bEncountersLeft = false;
 	OrchestrateEncounter(bEncountersLeft);
 }
