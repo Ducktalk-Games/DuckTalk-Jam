@@ -24,8 +24,6 @@ void AKioskGameModeBase::BeginPlay()
 void AKioskGameModeBase::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	ProcessActiveEvents();
 }
 
 void AKioskGameModeBase::StartRound()
@@ -178,28 +176,13 @@ void AKioskGameModeBase::OrchestrateEvent()
 	ActiveEvents.Add(Event);
 }
 
-void AKioskGameModeBase::ProcessActiveEvents()
+void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
 {
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!IsValid(Event)) return;
 
-	for (int32 i = ActiveEvents.Num() - 1; i >= 0; --i)
-	{
-		AKioskGameplayEvent* Event = ActiveEvents[i];
-
-		if (!Event)
-		{
-			ActiveEvents.RemoveAt(i);
-			continue;
-		}
-
-		if (Event->IsCompleted(this))
-		{
-			HappenedEvents.Add(Event);
-			ActiveEvents.RemoveAt(i);
-		}
-	}
-
-	b_EventHappening = !ActiveEvents.IsEmpty();
+	ActiveEvents.Remove(Event);
+	HappenedEvents.Add(Event);
+	Event->Destroy();
 }
 
 void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
@@ -263,6 +246,17 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	GetWorldTimerManager().SetTimer(
+		TimerBetweenEncounters,
+		this,
+		&AKioskGameModeBase::AdvanceEncounter,
+		60.0f,
+		false
+	);
+}
+
+void AKioskGameModeBase::AdvanceEncounter()
+{
 	bool bEncountersLeft = false;
 	OrchestrateEncounter(bEncountersLeft);
 }

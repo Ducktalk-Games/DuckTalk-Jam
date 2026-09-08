@@ -5,9 +5,9 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-01 14:39:51",
-        "timestamp": 1788269991,
-        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\EggPendulum.blend",
+        "date_time_str": "2026-09-07 19:03:32",
+        "timestamp": 1788804212,
+        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ShopPosters.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
@@ -16,20 +16,20 @@
     "assets": [
         {
             "scene_unit_scale": 1.0,
-            "asset_name": "PRP_EggPendulum",
+            "asset_name": "PRP_ShopPoster_02",
             "asset_type": "StaticMesh",
-            "asset_import_name": "SM_PRP_EggPendulum",
+            "asset_import_name": "SM_PRP_ShopPoster_02",
             "asset_import_path": "Game\\ImportedBlenderAssets",
             "files": [
                 {
                     "type": "FBX",
                     "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_EggPendulum.fbx"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_02.fbx"
                 },
                 {
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_EggPendulum_additional_data.json"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_02_additional_data.json"
                 }
             ],
             "auto_generate_collision": true,
@@ -38,20 +38,20 @@
         },
         {
             "scene_unit_scale": 1.0,
-            "asset_name": "Egg_Left",
+            "asset_name": "PRP_ShopPoster_01",
             "asset_type": "StaticMesh",
-            "asset_import_name": "SM_Egg_Left",
+            "asset_import_name": "SM_PRP_ShopPoster_01",
             "asset_import_path": "Game\\ImportedBlenderAssets",
             "files": [
                 {
                     "type": "FBX",
                     "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_Egg_Left.fbx"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_01.fbx"
                 },
                 {
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_Egg_Left_additional_data.json"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_01_additional_data.json"
                 }
             ],
             "auto_generate_collision": true,

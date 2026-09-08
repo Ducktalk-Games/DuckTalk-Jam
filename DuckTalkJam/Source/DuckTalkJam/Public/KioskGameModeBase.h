@@ -136,6 +136,9 @@ public:
 	bool b_DialogueFinished = false;
 
 	void TryAdvanceEncounter();
+	void AdvanceEncounter();
+
+	FTimerHandle TimerBetweenEncounters;
 
 	UFUNCTION(BlueprintCallable, Category = "Encounter")
 	void HandleDialogueEnded(bool bWasPhoneDialogue);
@@ -208,6 +211,8 @@ public:
 	bool b_EventHappening = false;
 
 	void ProcessActiveEvents();
+
+	void OnGameplayEventCompleted(AKioskGameplayEvent* Event);
 
 #pragma endregion Events
 
