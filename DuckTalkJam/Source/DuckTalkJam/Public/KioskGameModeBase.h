@@ -81,6 +81,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateDayExclusiveEvents();
 
+	void ClearDayExclusiveEvents();
+
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateRules();
 
@@ -227,6 +229,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<AKioskGameplayEvent>> HappenedEvents;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;

@@ -84,8 +84,11 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	switch (CurrentPhase)
 	{
 		case EKioskPhase::None:
+			ClearDayExclusiveEvents();
 			break;
 		case EKioskPhase::Setup:
+			ClearDayExclusiveEvents();
+			OrchestrateDayExclusiveEvents();
 			PrepareForNextRound();
 			break;
 		case EKioskPhase::Playing:
@@ -211,20 +214,33 @@ void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
 
 	for (TSubclassOf<AKioskGameplayEvent> EventClass : DayConfig->DayExclusiveEvents)
 	{
-		if (!EventClass) return;
+		if (!EventClass) continue;
 
 		AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
 			EventClass,
 			FVector::ZeroVector,
 			FRotator::ZeroRotator);
+
 		if (!Event) continue;
 
-		// Deliberately not adding this to active events,
-		// as these should be set events that appear simultaneously
-		// alongside random creepy events.
-		// ActiveEvents.Add(Event);
+		ActiveDayExclusiveEvents.Add(Event);
+		UE_LOG(LogTemp, Warning, TEXT("Starting day-exclusive event '%s' for Day %d."), *GetNameSafe(Event), Day);
 		Event->StartEvent(this);
 	}
+}
+
+void AKioskGameModeBase::ClearDayExclusiveEvents()
+{
+	if (ActiveDayExclusiveEvents.IsEmpty()) return;
+
+	for (AKioskGameplayEvent* Event : ActiveDayExclusiveEvents)
+	{
+		if (!IsValid(Event)) continue;
+		Event->Destroy();
+	}
+
+	ActiveDayExclusiveEvents.Empty();
+	UE_LOG(LogTemp, Warning, TEXT("Cleared day-exclusive events."));
 }
 
 void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
