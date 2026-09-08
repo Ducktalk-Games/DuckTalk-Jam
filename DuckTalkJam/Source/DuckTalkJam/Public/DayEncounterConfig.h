@@ -7,6 +7,8 @@
 #include "KioskRule.h"
 #include "DayEncounterConfig.generated.h"
 
+class AKioskGameplayEvent;
+
 USTRUCT(BlueprintType)
 struct DUCKTALKJAM_API FDayEncounterConfig
 {
@@ -20,6 +22,9 @@ struct DUCKTALKJAM_API FDayEncounterConfig
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> BossEODConversationTable;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<AKioskGameplayEvent>> DayExclusiveEvents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TSubclassOf<UKioskRule>> Rules;
