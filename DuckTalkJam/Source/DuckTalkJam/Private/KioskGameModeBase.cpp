@@ -105,62 +105,207 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 {
 	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter START ==="));
-	
+	UE_LOG(LogTemp, Log,
+		TEXT("Day: %d | CurrentEncounterIndex: %d | EncounterInProgress: %s"),
+		Day,
+		CurrentEncounterIndex,
+		b_EncounterInProgress ? TEXT("true") : TEXT("false")
+	);
+
 	bEncountersLeft = false;
 
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (b_EncounterInProgress || EncountersPerDay.IsEmpty()) return;
-	if (!KioskState) return;
+	if (!IsGamePhase(EKioskPhase::Playing))
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: Game phase is not Playing.")
+		);
+		return;
+	}
+
+	if (b_EncounterInProgress)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: An encounter is already in progress.")
+		);
+		return;
+	}
+
+	if (EncountersPerDay.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: EncountersPerDay is empty.")
+		);
+		return;
+	}
+
+	if (!KioskState)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: KioskState is null.")
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Looking for encounter configuration for Day %d."),
+		Day
+	);
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
 
 	if (!DayConfig)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OrchestrateEncounter aborted: No DayConfig found for Day %d."), Day);
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: No DayConfig found for Day %d."),
+			Day
+		);
+
+		UE_LOG(LogTemp, Log, TEXT("Broadcasting OnNoEncounters."));
 		OnNoEncounters.Broadcast();
 		return;
 	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("DayConfig found. CharacterOrder.Num(): %d"),
+		DayConfig->CharacterOrder.Num()
+	);
 
 	if (!DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
 	{
 		UE_LOG(LogTemp, Warning,
 			TEXT("OrchestrateEncounter aborted: Invalid encounter index %d. CharacterOrder.Num(): %d"),
-			CurrentEncounterIndex, DayConfig->CharacterOrder.Num()
+			CurrentEncounterIndex,
+			DayConfig->CharacterOrder.Num()
 		);
 
+		UE_LOG(LogTemp, Log, TEXT("Broadcasting OnNoEncounters."));
 		OnNoEncounters.Broadcast();
 		return;
 	}
 
 	const auto& EncounterData = DayConfig->CharacterOrder[CurrentEncounterIndex];
 
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter data found for index %d."),
+		CurrentEncounterIndex
+	);
+
 	TSubclassOf<AKioskCharacter> CharacterClass = EncounterData.CharacterClass;
-	if (!CharacterClass) return;
+
+	if (!CharacterClass)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterClass is null at encounter index %d."),
+			CurrentEncounterIndex
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterClass: %s"),
+		*GetNameSafe(CharacterClass.Get())
+	);
 
 	UDataTable* CharacterDialogueTable = EncounterData.CharacterConversationTable;
-	if (!CharacterDialogueTable) return;
+
+	if (!CharacterDialogueTable)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterConversationTable is null for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterConversationTable: %s"),
+		*GetNameSafe(CharacterDialogueTable)
+	);
 
 	const FGameplayTagContainer CharacterTraits = EncounterData.Traits;
-	if (CharacterTraits.IsEmpty()) return;
+
+	if (CharacterTraits.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterTraits is empty for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterTraits: %s"),
+		*CharacterTraits.ToStringSimple()
+	);
 
 	UTexture2D* CharacterTexture = EncounterData.CurrentCharacterTexture;
-	if (!CharacterTexture) return;
+
+	if (!CharacterTexture)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CurrentCharacterTexture is null for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterTexture: %s"),
+		*GetNameSafe(CharacterTexture)
+	);
 
 	const ECharacterSex CharacterSex = EncounterData.Sex;
-	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
 
-	if (!InWorldCharacter) return;
+	UE_LOG(LogTemp, Log,
+		TEXT("Searching world for actor of class: %s"),
+		*GetNameSafe(CharacterClass.Get())
+	);
+
+	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(
+		UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass)
+	);
+
+	if (!InWorldCharacter)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: Could not find an in-world AKioskCharacter of class %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Found in-world character: %s"),
+		*GetNameSafe(InWorldCharacter)
+	);
 
 	CurrentEncounter = CharacterClass;
 	CurrentEncounterCharacter = InWorldCharacter;
 	CurrentCharacterEntry = EncounterData;
-	b_EncounterInProgress = true;
 
+	b_EncounterInProgress = true;
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter state initialized. InProgress: %s | Resolved: %s | DialogueFinished: %s"),
+		b_EncounterInProgress ? TEXT("true") : TEXT("false"),
+		b_EncounterResolved ? TEXT("true") : TEXT("false"),
+		b_DialogueFinished ? TEXT("true") : TEXT("false")
+	);
+
 	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter started. Index: %d | Character: %s | EncountersLeft: %s"),
+		CurrentEncounterIndex,
+		*GetNameSafe(InWorldCharacter),
+		bEncountersLeft ? TEXT("true") : TEXT("false")
+	);
+
+	UE_LOG(LogTemp, Log, TEXT("Broadcasting OnEncounterStarted."));
 	OnEncounterStarted.Broadcast(InWorldCharacter);
+
 	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter END ==="));
 }
 
@@ -329,7 +474,7 @@ void AKioskGameModeBase::HandleEncounterExitFinished()
 
 void AKioskGameModeBase::TryAdvanceEncounter()
 {
-	if (!b_EncounterResolved || !b_DialogueFinished)return;
+	if (!b_EncounterResolved || !b_DialogueFinished) return;
 
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
