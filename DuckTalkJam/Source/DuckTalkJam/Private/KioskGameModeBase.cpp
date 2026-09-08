@@ -92,44 +92,52 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 
 void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 {
+	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter START ==="));
+	
 	bEncountersLeft = false;
 
-	if (!IsGamePhase(EKioskPhase::Playing) ||
-		b_EncounterInProgress ||
-		EncountersPerDay.IsEmpty() ||
-		!KioskState)
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (b_EncounterInProgress || EncountersPerDay.IsEmpty()) return;
+	if (!KioskState) return;
+
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
+
+	if (!DayConfig)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("OrchestrateEncounter aborted: No DayConfig found for Day %d."), Day);
+		OnNoEncounters.Broadcast();
 		return;
 	}
 
-	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
-	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
+	if (!DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
 	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: Invalid encounter index %d. CharacterOrder.Num(): %d"),
+			CurrentEncounterIndex, DayConfig->CharacterOrder.Num()
+		);
+
 		OnNoEncounters.Broadcast();
 		return;
 	}
 
 	const auto& EncounterData = DayConfig->CharacterOrder[CurrentEncounterIndex];
+
 	TSubclassOf<AKioskCharacter> CharacterClass = EncounterData.CharacterClass;
 	if (!CharacterClass) return;
 
 	UDataTable* CharacterDialogueTable = EncounterData.CharacterConversationTable;
 	if (!CharacterDialogueTable) return;
 
-	FGameplayTagContainer CharacterTraits = EncounterData.Traits;
+	const FGameplayTagContainer CharacterTraits = EncounterData.Traits;
 	if (CharacterTraits.IsEmpty()) return;
 
 	UTexture2D* CharacterTexture = EncounterData.CurrentCharacterTexture;
 	if (!CharacterTexture) return;
 
-	ECharacterSex CharacterSex = EncounterData.Sex;
+	const ECharacterSex CharacterSex = EncounterData.Sex;
 	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
 
-	if (!InWorldCharacter)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No in-world actor found for %s"), *CharacterClass->GetName());
-		return;
-	}
+	if (!InWorldCharacter) return;
 
 	CurrentEncounter = CharacterClass;
 	CurrentEncounterCharacter = InWorldCharacter;
@@ -141,6 +149,7 @@ void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 
 	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
 	OnEncounterStarted.Broadcast(InWorldCharacter);
+	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter END ==="));
 }
 
 void AKioskGameModeBase::OrchestrateRules()
@@ -192,10 +201,21 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 
 	Character->GrantedEntry();
 
-	if (DoesCharacterViolateRules())
-		PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been kept out
-	else
-		RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly let in
+	switch (EvaluateCharacterRules())
+	{
+		case ERuleEvaluation::Forbidden:
+			PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been kept out
+			break;
+		
+		case ERuleEvaluation::RequiredToEnter:
+			RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly let in
+			break;
+
+		case ERuleEvaluation::NoApplicableRule:
+			// n/a
+			break;
+	}
+
 
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
@@ -213,10 +233,20 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 
 	Character->RejectedEntry();
 
-	if (DoesCharacterViolateRules())
-		RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
-	else
-		PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been let in
+	switch (EvaluateCharacterRules())
+	{
+		case ERuleEvaluation::Forbidden:
+			RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
+			break;
+
+		case ERuleEvaluation::RequiredToEnter:
+			PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been let in
+			break;
+
+		case ERuleEvaluation::NoApplicableRule:
+			// n/a
+			break;
+	}
 
 	CurrentEncounter = nullptr;
 	CurrentCharacterEntry = FKioskCharacterEntry();
@@ -237,6 +267,7 @@ void AKioskGameModeBase::HandleEncounterExitFinished()
 {
 	b_EncounterResolved = true;
 	TryAdvanceEncounter();
+	CurrentEncounterCharacter;
 }
 
 void AKioskGameModeBase::TryAdvanceEncounter()
@@ -250,7 +281,7 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 		TimerBetweenEncounters,
 		this,
 		&AKioskGameModeBase::AdvanceEncounter,
-		60.0f,
+		30.0f,
 		false
 	);
 }
@@ -271,6 +302,30 @@ bool AKioskGameModeBase::DoesCharacterViolateRules()
 	}
 
 	return false;
+}
+
+ERuleEvaluation AKioskGameModeBase::EvaluateCharacterRules() const
+{
+	bool bRequiredToEnter = false;
+
+	for (UKioskRule* Rule : AppliedRules)
+	{
+		if (!Rule) continue;
+
+		const bool bMatchesRule = Rule->IsViolatedBy(CurrentCharacterEntry.Traits);
+
+		if (!bMatchesRule) continue;
+
+		switch (Rule->RuleType)
+		{
+			case EKioskRuleType::Forbiden: return ERuleEvaluation::Forbidden;
+			case EKioskRuleType::RequiredEntry: bRequiredToEnter = true; break;
+		}
+	}
+
+	if (bRequiredToEnter) return ERuleEvaluation::RequiredToEnter;
+
+	return ERuleEvaluation::NoApplicableRule;
 }
 
 void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
