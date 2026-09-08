@@ -38,16 +38,25 @@ void AKioskGameModeBase::StartRound()
 
 void AKioskGameModeBase::EndRound()
 {
-	KioskState->Coins = FMath::Max(
-		KioskState->Coins + DayWage - (Mistakes * MistakePenalty),
-		0
-	);
+	KioskState->Coins = FMath::Max(KioskState->Coins + DayWage - (Mistakes * MistakePenalty), 0);
 	++Day;
 
 	OnEndRound.Broadcast();
 
+	if (!EncountersPerDay.Contains(Day))
+	{
+		EndGame();
+		return;
+	}
+
 	PrepareForNextRound();
 	SetKioskPhase(EKioskPhase::Setup);
+}
+
+void AKioskGameModeBase::EndGame()
+{
+	OnEndGame.Broadcast();
+	SetKioskPhase(EKioskPhase::Credits);
 }
 
 void AKioskGameModeBase::PrepareForNextRound()
@@ -74,8 +83,11 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	switch (CurrentPhase)
 	{
 		case EKioskPhase::None:
+			ClearDayExclusiveEvents();
 			break;
 		case EKioskPhase::Setup:
+			ClearDayExclusiveEvents();
+			OrchestrateDayExclusiveEvents();
 			PrepareForNextRound();
 			break;
 		case EKioskPhase::Playing:
@@ -174,15 +186,60 @@ void AKioskGameModeBase::OrchestrateEvent()
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
-	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
-	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
+	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1);
+	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex];
 
-	AKioskGameplayEvent* Event = NewObject<AKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
+	if (!EventClass) return;
+
+	AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
+		EventClass,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator);
 	if (!Event) return;
 
-	Event->StartEvent(this);
 	b_EventHappening = true;
 	ActiveEvents.Add(Event);
+
+	Event->StartEvent(this);
+}
+
+void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
+{
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!KioskState) return;
+
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
+	if (!DayConfig) return;
+
+	for (TSubclassOf<AKioskGameplayEvent> EventClass : DayConfig->DayExclusiveEvents)
+	{
+		if (!EventClass) continue;
+
+		AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
+			EventClass,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator);
+
+		if (!Event) continue;
+
+		ActiveDayExclusiveEvents.Add(Event);
+		UE_LOG(LogTemp, Warning, TEXT("Starting day-exclusive event '%s' for Day %d."), *GetNameSafe(Event), Day);
+		Event->StartEvent(this);
+	}
+}
+
+void AKioskGameModeBase::ClearDayExclusiveEvents()
+{
+	if (ActiveDayExclusiveEvents.IsEmpty()) return;
+
+	for (AKioskGameplayEvent* Event : ActiveDayExclusiveEvents)
+	{
+		if (!IsValid(Event)) continue;
+		Event->Destroy();
+	}
+
+	ActiveDayExclusiveEvents.Empty();
+	UE_LOG(LogTemp, Warning, TEXT("Cleared day-exclusive events."));
 }
 
 void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
@@ -281,7 +338,7 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 		TimerBetweenEncounters,
 		this,
 		&AKioskGameModeBase::AdvanceEncounter,
-		30.0f,
+		10.0f,
 		false
 	);
 }
