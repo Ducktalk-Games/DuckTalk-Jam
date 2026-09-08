@@ -56,7 +56,6 @@ void AKioskGameModeBase::EndRound()
 void AKioskGameModeBase::EndGame()
 {
 	OnEndGame.Broadcast();
-
 	SetKioskPhase(EKioskPhase::Credits);
 }
 
