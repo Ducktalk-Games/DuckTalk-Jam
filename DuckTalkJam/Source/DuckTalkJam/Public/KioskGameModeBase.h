@@ -37,10 +37,31 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndGame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNoEncounters);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPenalizePlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRewardPlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnPhaseChanged,
+	EKioskPhase, Phase
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnEncounterStarted,
+	AKioskCharacter*,
+	CharacterActor
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnPenalizePlayer,
+	AKioskCharacter*, Character,
+	FGameplayTagContainer, Traits,
+	int32, GameDay
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnRewardPlayer,
+	AKioskCharacter*, Character,
+	FGameplayTagContainer, Traits,
+	int32, GameDay
+);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -153,6 +174,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterResolved = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_IsRepremanded = false;
+
 	UPROPERTY(Editanywhere, BlueprintReadWrite)
 	bool b_DialogueFinished = false;
 
@@ -209,10 +233,10 @@ public:
 	ERuleEvaluation EvaluateCharacterRules() const;
 
 	UFUNCTION(BlueprintCallable)
-	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
+	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay);
 
 	UFUNCTION(BlueprintCallable)
-	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
+	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay);
 
 	UFUNCTION(BlueprintCallable)
 	void AddPayDock(FName DockName, float Amount);

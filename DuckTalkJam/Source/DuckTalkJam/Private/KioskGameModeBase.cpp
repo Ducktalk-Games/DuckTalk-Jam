@@ -91,6 +91,7 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 			PrepareForNextRound();
 			break;
 		case EKioskPhase::Playing:
+			OrchestrateRules();
 			StartRound();
 			break;
 		case EKioskPhase::EndOfDay:
@@ -406,11 +407,11 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	switch (EvaluateCharacterRules())
 	{
 		case ERuleEvaluation::Forbidden:
-			PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been kept out
+			PenalizePlayer(Character, CurrentCharacterEntry.Traits, Day); // should have been kept out
 			break;
 		
 		case ERuleEvaluation::RequiredToEnter:
-			RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly let in
+			RewardPlayer(Character, CurrentCharacterEntry.Traits, Day); // correctly let in
 			break;
 
 		case ERuleEvaluation::NoApplicableRule:
@@ -438,11 +439,11 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	switch (EvaluateCharacterRules())
 	{
 		case ERuleEvaluation::Forbidden:
-			RewardPlayer(Character, CurrentCharacterEntry.Traits); // correctly kept out
+			RewardPlayer(Character, CurrentCharacterEntry.Traits, Day); // correctly kept out
 			break;
 
 		case ERuleEvaluation::RequiredToEnter:
-			PenalizePlayer(Character, CurrentCharacterEntry.Traits); // should have been let in
+			PenalizePlayer(Character, CurrentCharacterEntry.Traits, Day); // should have been let in
 			break;
 
 		case ERuleEvaluation::NoApplicableRule:
@@ -474,7 +475,7 @@ void AKioskGameModeBase::HandleEncounterExitFinished()
 
 void AKioskGameModeBase::TryAdvanceEncounter()
 {
-	if (!b_EncounterResolved || !b_DialogueFinished) return;
+	if (!b_EncounterResolved || !b_DialogueFinished || b_IsRepremanded) return;
 
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
@@ -510,36 +511,94 @@ ERuleEvaluation AKioskGameModeBase::EvaluateCharacterRules() const
 {
 	bool bRequiredToEnter = false;
 
+	UE_LOG(LogTemp, Verbose, TEXT("Evaluating %d applied kiosk rules."), AppliedRules.Num());
+
 	for (UKioskRule* Rule : AppliedRules)
 	{
-		if (!Rule) continue;
+		if (!Rule)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Encountered null rule in AppliedRules."));
+			continue;
+		}
 
 		const bool bMatchesRule = Rule->IsViolatedBy(CurrentCharacterEntry.Traits);
 
-		if (!bMatchesRule) continue;
+		UE_LOG(
+			LogTemp,
+			Error,
+			TEXT("Rule '%s' | Type: %d | Violated: %s"),
+			*GetNameSafe(Rule),
+			static_cast<int32>(Rule->RuleType),
+			bMatchesRule ? TEXT("true") : TEXT("false")
+		);
+
+		if (!bMatchesRule)
+		{
+			continue;
+		}
 
 		switch (Rule->RuleType)
 		{
-			case EKioskRuleType::Forbiden: return ERuleEvaluation::Forbidden;
-			case EKioskRuleType::RequiredEntry: bRequiredToEnter = true; break;
+		case EKioskRuleType::Forbiden:
+		{
+			UE_LOG(
+				LogTemp,
+				Log,
+				TEXT("Character evaluation result: Forbidden. Triggered by rule '%s'."),
+				*GetNameSafe(Rule)
+			);
+
+			return ERuleEvaluation::Forbidden;
+		}
+
+		case EKioskRuleType::RequiredEntry:
+		{
+			UE_LOG(
+				LogTemp,
+				Log,
+				TEXT("Rule '%s' requires entry."),
+				*GetNameSafe(Rule)
+			);
+
+			bRequiredToEnter = true;
+			break;
+		}
+
+		default:
+		{
+			UE_LOG(
+				LogTemp,
+				Warning,
+				TEXT("Rule '%s' has an unhandled RuleType: %d."),
+				*GetNameSafe(Rule),
+				static_cast<int32>(Rule->RuleType)
+			);
+
+			break;
+		}
 		}
 	}
 
-	if (bRequiredToEnter) return ERuleEvaluation::RequiredToEnter;
+	if (bRequiredToEnter)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Character evaluation result: RequiredToEnter."));
+		return ERuleEvaluation::RequiredToEnter;
+	}
 
+	UE_LOG(LogTemp, Log, TEXT("Character evaluation result: NoApplicableRule."));
 	return ERuleEvaluation::NoApplicableRule;
 }
 
-void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
+void AKioskGameModeBase::PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay)
 {
 	++Mistakes;
-	OnPenalizePlayer.Broadcast(Character, Traits);
+	OnPenalizePlayer.Broadcast(Character, Traits, Day);
 }
 
-void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits)
+void AKioskGameModeBase::RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay)
 {
 	++CorrectlyProcessed;
-	OnRewardPlayer.Broadcast(Character, Traits);
+	OnRewardPlayer.Broadcast(Character, Traits, Day);
 }
 
 void AKioskGameModeBase::AddPayDock(FName DockName, float Amount)
