@@ -7,12 +7,22 @@
 #include "KioskCharacter.h"
 #include "KioskRule.generated.h"
 
+UENUM(BlueprintType)
+enum class EKioskRuleType : uint8
+{
+	Forbiden,
+	RequiredEntry
+};
+
 UCLASS(Abstract, Blueprintable)
 class DUCKTALKJAM_API UKioskRule : public UObject
 {
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Rule Type")
+	EKioskRuleType RuleType = EKioskRuleType::Forbiden;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FText DisplayName;

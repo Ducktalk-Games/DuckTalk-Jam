@@ -3,10 +3,20 @@
 
 #include "KioskGameplayEvent.h"
 
-void UKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
+AKioskGameplayEvent::AKioskGameplayEvent()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
+void AKioskGameplayEvent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
 {}
 
-bool UKioskGameplayEvent::IsCompleted_Implementation(AKioskGameModeBase* GameMode) const
+void AKioskGameplayEvent::CompleteEvent()
 {
-	return false;
+	OnCompleted.Broadcast(this);
 }

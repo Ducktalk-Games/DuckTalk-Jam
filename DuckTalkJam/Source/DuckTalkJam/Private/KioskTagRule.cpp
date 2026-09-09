@@ -8,5 +8,7 @@
 bool UKioskTagRule::IsViolatedBy_Implementation(FGameplayTagContainer Traits) const
 {
 	if (Traits.IsEmpty()) return false;
-	return Traits.HasTag(ForbiddenTag);
+
+	const bool bViolated = Traits.HasTag(ForbiddenTag);
+	return bViolated;
 }

@@ -52,6 +52,13 @@ public:
 		Category = "Dialogue",
 		meta = (ToolTip = "Advances the current dialogue.\nRowName: The Data Table row to load next.")
 	)
+	void AdvanceCurrentDialogue();
+
+	UFUNCTION(
+		BlueprintCallable,
+		Category = "Dialogue",
+		meta = (ToolTip = "Advances the current dialogue.\nRowName: The Data Table row to load next.")
+	)
 	void AdvanceDialogue(FName RowName);
 
 	UFUNCTION(

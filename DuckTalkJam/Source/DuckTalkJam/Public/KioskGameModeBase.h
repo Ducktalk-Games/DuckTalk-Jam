@@ -21,16 +21,47 @@ enum class EKioskPhase : uint8
 	StartOfDay	UMETA(DisplayName = "Start Of Day"),
 	Playing		UMETA(DisplayName = "Playing"),
 	EndOfDay	UMETA(DisplayName = "End Of Day"),
-	Shopping	UMETA(DisplayName = "Shopping")
+	Shopping	UMETA(DisplayName = "Shopping"),
+	Credits		UMETA(DisplayName = "Credits scene")
+};
+
+UENUM(BlueprintType)
+enum class ERuleEvaluation : uint8
+{
+	Forbidden,
+	RequiredToEnter,
+	NoApplicableRule
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndGame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNoEncounters);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPenalizePlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRewardPlayer, AKioskCharacter*, Character, FGameplayTagContainer, Traits);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnPhaseChanged,
+	EKioskPhase, Phase
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+	FOnEncounterStarted,
+	AKioskCharacter*,
+	CharacterActor
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnPenalizePlayer,
+	AKioskCharacter*, Character,
+	FGameplayTagContainer, Traits,
+	int32, GameDay
+);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(
+	FOnRewardPlayer,
+	AKioskCharacter*, Character,
+	FGameplayTagContainer, Traits,
+	int32, GameDay
+);
 
 UCLASS()
 class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
@@ -69,6 +100,11 @@ public:
 	void OrchestrateEvent();
 
 	UFUNCTION(BlueprintCallable)
+	void OrchestrateDayExclusiveEvents();
+
+	void ClearDayExclusiveEvents();
+
+	UFUNCTION(BlueprintCallable)
 	void OrchestrateRules();
 
 #pragma region GameplayEvents
@@ -78,6 +114,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEndRound OnEndRound;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnEndGame OnEndGame;
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnPenalizePlayer OnPenalizePlayer;
@@ -99,6 +138,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EndRound();
+
+	UFUNCTION(BlueprintCallable)
+	void EndGame();
 
 	void PrepareForNextRound();
 
@@ -132,10 +174,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EncounterResolved = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_IsRepremanded = false;
+
 	UPROPERTY(Editanywhere, BlueprintReadWrite)
 	bool b_DialogueFinished = false;
 
 	void TryAdvanceEncounter();
+	void AdvanceEncounter();
+
+	FTimerHandle TimerBetweenEncounters;
 
 	UFUNCTION(BlueprintCallable, Category = "Encounter")
 	void HandleDialogueEnded(bool bWasPhoneDialogue);
@@ -182,11 +230,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool DoesCharacterViolateRules();
 
-	UFUNCTION(BlueprintCallable)
-	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
+	ERuleEvaluation EvaluateCharacterRules() const;
 
 	UFUNCTION(BlueprintCallable)
-	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits);
+	void PenalizePlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay);
+
+	UFUNCTION(BlueprintCallable)
+	void RewardPlayer(AKioskCharacter* Character, FGameplayTagContainer Traits, int GameDay);
 
 	UFUNCTION(BlueprintCallable)
 	void AddPayDock(FName DockName, float Amount);
@@ -196,18 +246,23 @@ public:
 #pragma region Events
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TSubclassOf<UKioskGameplayEvent>> PossibleEvents;
+	TArray<TSubclassOf<AKioskGameplayEvent>> PossibleEvents;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UKioskGameplayEvent>> ActiveEvents;
+	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveEvents;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UKioskGameplayEvent>> HappenedEvents;
+	TArray<TObjectPtr<AKioskGameplayEvent>> HappenedEvents;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;
 
 	void ProcessActiveEvents();
+
+	void OnGameplayEventCompleted(AKioskGameplayEvent* Event);
 
 #pragma endregion Events
 
