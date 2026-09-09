@@ -21,7 +21,8 @@ enum class EKioskPhase : uint8
 	StartOfDay	UMETA(DisplayName = "Start Of Day"),
 	Playing		UMETA(DisplayName = "Playing"),
 	EndOfDay	UMETA(DisplayName = "End Of Day"),
-	Shopping	UMETA(DisplayName = "Shopping")
+	Shopping	UMETA(DisplayName = "Shopping"),
+	Credits		UMETA(DisplayName = "Credits scene")
 };
 
 UENUM(BlueprintType)
@@ -34,6 +35,7 @@ enum class ERuleEvaluation : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndGame);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnNoEncounters);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChanged, EKioskPhase, Phase);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEncounterStarted, AKioskCharacter*, CharacterActor);
@@ -77,6 +79,11 @@ public:
 	void OrchestrateEvent();
 
 	UFUNCTION(BlueprintCallable)
+	void OrchestrateDayExclusiveEvents();
+
+	void ClearDayExclusiveEvents();
+
+	UFUNCTION(BlueprintCallable)
 	void OrchestrateRules();
 
 #pragma region GameplayEvents
@@ -86,6 +93,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnEndRound OnEndRound;
+
+	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
+	FOnEndGame OnEndGame;
 
 	UPROPERTY(BlueprintAssignable, Category = "Kiosk|Events")
 	FOnPenalizePlayer OnPenalizePlayer;
@@ -107,6 +117,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EndRound();
+
+	UFUNCTION(BlueprintCallable)
+	void EndGame();
 
 	void PrepareForNextRound();
 
@@ -216,6 +229,9 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<AKioskGameplayEvent>> HappenedEvents;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;

@@ -38,16 +38,25 @@ void AKioskGameModeBase::StartRound()
 
 void AKioskGameModeBase::EndRound()
 {
-	KioskState->Coins = FMath::Max(
-		KioskState->Coins + DayWage - (Mistakes * MistakePenalty),
-		0
-	);
+	KioskState->Coins = FMath::Max(KioskState->Coins + DayWage - (Mistakes * MistakePenalty), 0);
 	++Day;
 
 	OnEndRound.Broadcast();
 
+	if (!EncountersPerDay.Contains(Day))
+	{
+		EndGame();
+		return;
+	}
+
 	PrepareForNextRound();
 	SetKioskPhase(EKioskPhase::Setup);
+}
+
+void AKioskGameModeBase::EndGame()
+{
+	OnEndGame.Broadcast();
+	SetKioskPhase(EKioskPhase::Credits);
 }
 
 void AKioskGameModeBase::PrepareForNextRound()
@@ -74,8 +83,11 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	switch (CurrentPhase)
 	{
 		case EKioskPhase::None:
+			ClearDayExclusiveEvents();
 			break;
 		case EKioskPhase::Setup:
+			ClearDayExclusiveEvents();
+			OrchestrateDayExclusiveEvents();
 			PrepareForNextRound();
 			break;
 		case EKioskPhase::Playing:
@@ -93,62 +105,207 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 void AKioskGameModeBase::OrchestrateEncounter(bool& bEncountersLeft)
 {
 	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter START ==="));
-	
+	UE_LOG(LogTemp, Log,
+		TEXT("Day: %d | CurrentEncounterIndex: %d | EncounterInProgress: %s"),
+		Day,
+		CurrentEncounterIndex,
+		b_EncounterInProgress ? TEXT("true") : TEXT("false")
+	);
+
 	bEncountersLeft = false;
 
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
-	if (b_EncounterInProgress || EncountersPerDay.IsEmpty()) return;
-	if (!KioskState) return;
+	if (!IsGamePhase(EKioskPhase::Playing))
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: Game phase is not Playing.")
+		);
+		return;
+	}
+
+	if (b_EncounterInProgress)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: An encounter is already in progress.")
+		);
+		return;
+	}
+
+	if (EncountersPerDay.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: EncountersPerDay is empty.")
+		);
+		return;
+	}
+
+	if (!KioskState)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: KioskState is null.")
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Looking for encounter configuration for Day %d."),
+		Day
+	);
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
 
 	if (!DayConfig)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("OrchestrateEncounter aborted: No DayConfig found for Day %d."), Day);
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEncounter aborted: No DayConfig found for Day %d."),
+			Day
+		);
+
+		UE_LOG(LogTemp, Log, TEXT("Broadcasting OnNoEncounters."));
 		OnNoEncounters.Broadcast();
 		return;
 	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("DayConfig found. CharacterOrder.Num(): %d"),
+		DayConfig->CharacterOrder.Num()
+	);
 
 	if (!DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
 	{
 		UE_LOG(LogTemp, Warning,
 			TEXT("OrchestrateEncounter aborted: Invalid encounter index %d. CharacterOrder.Num(): %d"),
-			CurrentEncounterIndex, DayConfig->CharacterOrder.Num()
+			CurrentEncounterIndex,
+			DayConfig->CharacterOrder.Num()
 		);
 
+		UE_LOG(LogTemp, Log, TEXT("Broadcasting OnNoEncounters."));
 		OnNoEncounters.Broadcast();
 		return;
 	}
 
 	const auto& EncounterData = DayConfig->CharacterOrder[CurrentEncounterIndex];
 
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter data found for index %d."),
+		CurrentEncounterIndex
+	);
+
 	TSubclassOf<AKioskCharacter> CharacterClass = EncounterData.CharacterClass;
-	if (!CharacterClass) return;
+
+	if (!CharacterClass)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterClass is null at encounter index %d."),
+			CurrentEncounterIndex
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterClass: %s"),
+		*GetNameSafe(CharacterClass.Get())
+	);
 
 	UDataTable* CharacterDialogueTable = EncounterData.CharacterConversationTable;
-	if (!CharacterDialogueTable) return;
+
+	if (!CharacterDialogueTable)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterConversationTable is null for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterConversationTable: %s"),
+		*GetNameSafe(CharacterDialogueTable)
+	);
 
 	const FGameplayTagContainer CharacterTraits = EncounterData.Traits;
-	if (CharacterTraits.IsEmpty()) return;
+
+	if (CharacterTraits.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CharacterTraits is empty for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterTraits: %s"),
+		*CharacterTraits.ToStringSimple()
+	);
 
 	UTexture2D* CharacterTexture = EncounterData.CurrentCharacterTexture;
-	if (!CharacterTexture) return;
+
+	if (!CharacterTexture)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: CurrentCharacterTexture is null for character %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("CharacterTexture: %s"),
+		*GetNameSafe(CharacterTexture)
+	);
 
 	const ECharacterSex CharacterSex = EncounterData.Sex;
-	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass));
 
-	if (!InWorldCharacter) return;
+	UE_LOG(LogTemp, Log,
+		TEXT("Searching world for actor of class: %s"),
+		*GetNameSafe(CharacterClass.Get())
+	);
+
+	AKioskCharacter* InWorldCharacter = Cast<AKioskCharacter>(
+		UGameplayStatics::GetActorOfClass(GetWorld(), CharacterClass)
+	);
+
+	if (!InWorldCharacter)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("OrchestrateEncounter aborted: Could not find an in-world AKioskCharacter of class %s."),
+			*GetNameSafe(CharacterClass.Get())
+		);
+		return;
+	}
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Found in-world character: %s"),
+		*GetNameSafe(InWorldCharacter)
+	);
 
 	CurrentEncounter = CharacterClass;
 	CurrentEncounterCharacter = InWorldCharacter;
 	CurrentCharacterEntry = EncounterData;
-	b_EncounterInProgress = true;
 
+	b_EncounterInProgress = true;
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter state initialized. InProgress: %s | Resolved: %s | DialogueFinished: %s"),
+		b_EncounterInProgress ? TEXT("true") : TEXT("false"),
+		b_EncounterResolved ? TEXT("true") : TEXT("false"),
+		b_DialogueFinished ? TEXT("true") : TEXT("false")
+	);
+
 	bEncountersLeft = DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex + 1);
+
+	UE_LOG(LogTemp, Log,
+		TEXT("Encounter started. Index: %d | Character: %s | EncountersLeft: %s"),
+		CurrentEncounterIndex,
+		*GetNameSafe(InWorldCharacter),
+		bEncountersLeft ? TEXT("true") : TEXT("false")
+	);
+
+	UE_LOG(LogTemp, Log, TEXT("Broadcasting OnEncounterStarted."));
 	OnEncounterStarted.Broadcast(InWorldCharacter);
+
 	UE_LOG(LogTemp, Log, TEXT("=== OrchestrateEncounter END ==="));
 }
 
@@ -174,15 +331,60 @@ void AKioskGameModeBase::OrchestrateEvent()
 	if (!IsGamePhase(EKioskPhase::Playing)) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
-	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1); // Get a random index from PossibleEvents
-	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex]; // get the event class at that index
+	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1);
+	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex];
 
-	AKioskGameplayEvent* Event = NewObject<AKioskGameplayEvent>(this, EventClass); // Create an instance of that event class
+	if (!EventClass) return;
+
+	AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
+		EventClass,
+		FVector::ZeroVector,
+		FRotator::ZeroRotator);
 	if (!Event) return;
 
-	Event->StartEvent(this);
 	b_EventHappening = true;
 	ActiveEvents.Add(Event);
+
+	Event->StartEvent(this);
+}
+
+void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
+{
+	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!KioskState) return;
+
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(Day);
+	if (!DayConfig) return;
+
+	for (TSubclassOf<AKioskGameplayEvent> EventClass : DayConfig->DayExclusiveEvents)
+	{
+		if (!EventClass) continue;
+
+		AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
+			EventClass,
+			FVector::ZeroVector,
+			FRotator::ZeroRotator);
+
+		if (!Event) continue;
+
+		ActiveDayExclusiveEvents.Add(Event);
+		UE_LOG(LogTemp, Warning, TEXT("Starting day-exclusive event '%s' for Day %d."), *GetNameSafe(Event), Day);
+		Event->StartEvent(this);
+	}
+}
+
+void AKioskGameModeBase::ClearDayExclusiveEvents()
+{
+	if (ActiveDayExclusiveEvents.IsEmpty()) return;
+
+	for (AKioskGameplayEvent* Event : ActiveDayExclusiveEvents)
+	{
+		if (!IsValid(Event)) continue;
+		Event->Destroy();
+	}
+
+	ActiveDayExclusiveEvents.Empty();
+	UE_LOG(LogTemp, Warning, TEXT("Cleared day-exclusive events."));
 }
 
 void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
@@ -272,7 +474,7 @@ void AKioskGameModeBase::HandleEncounterExitFinished()
 
 void AKioskGameModeBase::TryAdvanceEncounter()
 {
-	if (!b_EncounterResolved || !b_DialogueFinished)return;
+	if (!b_EncounterResolved || !b_DialogueFinished) return;
 
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
@@ -281,7 +483,7 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 		TimerBetweenEncounters,
 		this,
 		&AKioskGameModeBase::AdvanceEncounter,
-		30.0f,
+		10.0f,
 		false
 	);
 }
