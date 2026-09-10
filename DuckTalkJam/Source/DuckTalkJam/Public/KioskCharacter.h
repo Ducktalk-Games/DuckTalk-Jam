@@ -16,9 +16,6 @@ public:
 	// Sets default values for this character's properties
 	AKioskCharacter();
 
-	UPROPERTY(BlueprintReadOnly, Category = "Player Reference")
-	TObjectPtr<APlayerBase> PlayerReference;
-
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Kiosk Character")
 	void StartEncounter();
 

@@ -18,6 +18,9 @@ class DUCKTALKJAM_API UKioskState : public UGameInstance
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	int32 Day = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")

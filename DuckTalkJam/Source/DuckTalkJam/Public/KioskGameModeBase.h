@@ -18,11 +18,10 @@ enum class EKioskPhase : uint8
 {
 	None 		UMETA(DisplayName = "None"),
 	Setup		UMETA(DisplayName = "Setup"),
-	StartOfDay	UMETA(DisplayName = "Start Of Day"),
 	Playing		UMETA(DisplayName = "Playing"),
 	EndOfDay	UMETA(DisplayName = "End Of Day"),
 	Shopping	UMETA(DisplayName = "Shopping"),
-	Credits		UMETA(DisplayName = "Credits scene")
+	Credits		UMETA(DisplayName = "Credits")
 };
 
 UENUM(BlueprintType)
@@ -32,6 +31,8 @@ enum class ERuleEvaluation : uint8
 	RequiredToEnter,
 	NoApplicableRule
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogKiosk, Log, All);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStartRound);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEndRound);
@@ -71,11 +72,8 @@ class DUCKTALKJAM_API AKioskGameModeBase : public AGameModeBase
 public:
 	AKioskGameModeBase();
 
-	UPROPERTY()
-	UKioskState* KioskState;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
-	int32 Day = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UKioskState* KioskState = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	EKioskPhase CurrentPhase = EKioskPhase::None;
@@ -227,9 +225,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void TurnAwayCharacter(AKioskCharacter* Character);
 
-	UFUNCTION(BlueprintCallable)
-	bool DoesCharacterViolateRules();
-
 	ERuleEvaluation EvaluateCharacterRules() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -260,8 +255,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;
 
-	void ProcessActiveEvents();
-
 	void OnGameplayEventCompleted(AKioskGameplayEvent* Event);
 
 #pragma endregion Events
@@ -269,5 +262,4 @@ public:
 protected:
 
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
 };

@@ -16,8 +16,6 @@ AKioskCharacter::AKioskCharacter()
 void AKioskCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PlayerReference = Cast<APlayerBase>(UGameplayStatics::GetPlayerCharacter(this, 0));
 }
 
 // Called every frame
