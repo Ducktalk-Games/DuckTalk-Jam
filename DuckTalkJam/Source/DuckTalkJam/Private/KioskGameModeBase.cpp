@@ -58,7 +58,6 @@ void AKioskGameModeBase::PrepareForNextRound()
 {
 	CurrentEncounterIndex = 0;
 	CurrentEncounter = nullptr;
-	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
@@ -310,7 +309,6 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
-	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 
 	++CurrentEncounterIndex;
@@ -339,7 +337,6 @@ void AKioskGameModeBase::TurnAwayCharacter(AKioskCharacter* Character)
 	}
 
 	CurrentEncounter = nullptr;
-	CurrentCharacterEntry = FKioskCharacterEntry();
 	b_EncounterInProgress = false;
 
 	++CurrentEncounterIndex;
