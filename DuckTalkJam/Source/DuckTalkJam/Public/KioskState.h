@@ -36,19 +36,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void SetMusicVolume(float Volume);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	UPROPERTY(BlueprintReadWrite, Category = "Progress")
 	int32 Day = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	UPROPERTY(BlueprintReadWrite, Category = "Progress")
 	float Coins = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	UPROPERTY(BlueprintReadWrite, Category = "Items")
 	TArray<FGameplayTag> Items;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Items")
+	UPROPERTY(BlueprintReadWrite, Category = "Items")
 	bool b_ItemsInitialized = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
+	UPROPERTY(BlueprintReadWrite, Category = "Progress")
 	TArray<FGameplayTag> Flags;
 
 #pragma region Flags
