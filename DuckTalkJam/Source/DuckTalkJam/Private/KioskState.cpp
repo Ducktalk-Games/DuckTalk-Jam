@@ -2,7 +2,69 @@
 
 
 #include "KioskState.h"
+#include "Components/AudioComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "DayEncounterConfig.h"
+
+void UKioskState::Init()
+{
+	Super::Init();
+}
+
+void UKioskState::Shutdown()
+{
+	if (MusicComponent)
+	{
+		MusicComponent->Stop();
+	}
+
+	Super::Shutdown();
+}
+
+void UKioskState::PlayMusic(USoundBase* Music)
+{
+    if (!Music) return;
+
+    if (MusicComponent &&
+        MusicComponent->IsPlaying() &&
+        MusicComponent->GetSound() == Music) return;
+
+    if (MusicComponent)
+    {
+        MusicComponent->Stop();
+        MusicComponent = nullptr;
+    }
+
+    MusicComponent = UGameplayStatics::SpawnSound2D(
+        this,
+        Music,
+        1.0f,   // Volume
+        1.0f,   // Pitch
+        0.0f,   // Start time
+        nullptr,
+        true,   // Persist Across Level Transition
+        false   // Auto Destroy
+    );
+}
+
+void UKioskState::StopMusic()
+{
+    if (MusicComponent)
+    {
+        MusicComponent->Stop();
+        MusicComponent = nullptr;
+    }
+}
+
+void UKioskState::SetMusicVolume(float Volume)
+{
+    if (MusicComponent)
+    {
+        MusicComponent->SetVolumeMultiplier(
+            FMath::Clamp(Volume, 0.0f, 1.0f)
+        );
+    }
+}
 
 void UKioskState::AddFlag(FGameplayTag Flag)
 {

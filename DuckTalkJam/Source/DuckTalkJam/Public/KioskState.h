@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "DayEncounterConfig.h"
+#include "Components/AudioComponent.h"
 #include "Engine/GameInstance.h"
 #include "KioskState.generated.h"
 
@@ -16,6 +17,24 @@ class DUCKTALKJAM_API UKioskState : public UGameInstance
 	GENERATED_BODY()
 
 public:
+
+	virtual void Init() override;
+	virtual void Shutdown() override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	TObjectPtr<USoundBase> MenuMusic;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
+	TObjectPtr<USoundBase> GameplayMusic;
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void PlayMusic(USoundBase* Music);
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void StopMusic();
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void SetMusicVolume(float Volume);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Progress")
 	int32 Day = 1;
@@ -53,5 +72,10 @@ public:
 	void RemoveItem(FGameplayTag ItemTag);
 
 #pragma endregion Flags
+
+private:
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> MusicComponent;
 
 };
