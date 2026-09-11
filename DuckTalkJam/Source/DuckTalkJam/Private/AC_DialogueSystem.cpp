@@ -36,7 +36,7 @@ void UAC_DialogueSystem::StartDialogue()
 		return;
 	}
 
-	FF_DialogueRow* EntryRow = ResolveDialogueRow(FName("DIAG_INTRO_001"));
+	FF_DialogueRow* EntryRow = ResolveDialogueRow(EntryRowName);
 
 	if (!EntryRow)
 	{
@@ -153,6 +153,8 @@ void UAC_DialogueSystem::SelectChoice(
 	FName& OutNextRow)
 {
 	OutNextRow = NAME_None;
+
+	if (!KioskState) return;
 
 	if (!DialogueTable)
 	{

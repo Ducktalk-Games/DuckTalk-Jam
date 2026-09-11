@@ -368,7 +368,7 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 		TimerBetweenEncounters,
 		this,
 		&AKioskGameModeBase::AdvanceEncounter,
-		10.0f,
+		15.0f,
 		false
 	);
 }
