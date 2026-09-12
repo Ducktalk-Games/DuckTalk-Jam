@@ -229,6 +229,11 @@ void AKioskGameModeBase::OrchestrateEvent()
 		FRotator::ZeroRotator);
 	if (!Event) return;
 
+	Event->OnCompleted.AddUObject(
+		this,
+		&AKioskGameModeBase::OnGameplayEventCompleted
+	);
+
 	b_EventHappening = true;
 	ActiveEvents.Add(Event);
 
@@ -280,6 +285,7 @@ void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
 
 	ActiveEvents.Remove(Event);
 	HappenedEvents.Add(Event);
+	b_EventHappening = false;
 	Event->Destroy();
 }
 
