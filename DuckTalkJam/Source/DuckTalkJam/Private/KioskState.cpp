@@ -1,69 +1,112 @@
 // Copyright (c) 2026 Borna Hukman. All Rights Reserved.
 
-
 #include "KioskState.h"
+
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "DayEncounterConfig.h"
 
 void UKioskState::Init()
 {
 	Super::Init();
+
+	MusicVolume = 1.0f;
+}
+
+void UKioskState::InitializeMusicComponents()
+{
+	if (MusicComponentA && MusicComponentB) return;
+
+	USoundBase* InitialSound = MenuMusic ? MenuMusic : GameplayMusic;
+	if (!InitialSound) return;
+
+	MusicComponentA = UGameplayStatics::CreateSound2D(
+		this,
+		InitialSound,
+		MusicVolume,
+		1.0f,
+		0.0f,
+		nullptr,
+		true,   // Persist across level transition
+		false   // Don't auto destroy
+	);
+
+	MusicComponentB = UGameplayStatics::CreateSound2D(
+		this,
+		InitialSound,
+		MusicVolume,
+		1.0f,
+		0.0f,
+		nullptr,
+		true,
+		false
+	);
+
+	if (MusicComponentA) MusicComponentA->Stop();
+	if (MusicComponentB) MusicComponentB->Stop();
+
+	ActiveMusicComponent = MusicComponentA;
+	InactiveMusicComponent = MusicComponentB;
 }
 
 void UKioskState::Shutdown()
 {
-	if (MusicComponent)
+	if (MusicComponentA)
 	{
-		MusicComponent->Stop();
+		MusicComponentA->Stop();
+		MusicComponentA = nullptr;
 	}
+
+	if (MusicComponentB)
+	{
+		MusicComponentB->Stop();
+		MusicComponentB = nullptr;
+	}
+
+	ActiveMusicComponent = nullptr;
+	InactiveMusicComponent = nullptr;
 
 	Super::Shutdown();
 }
 
-void UKioskState::PlayMusic(USoundBase* Music)
+void UKioskState::PlayMusic(USoundBase* Music, float FadeDuration)
 {
-    if (!Music) return;
+	if (!Music) return;
 
-    if (MusicComponent &&
-        MusicComponent->IsPlaying() &&
-        MusicComponent->GetSound() == Music) return;
+	InitializeMusicComponents();
 
-    if (MusicComponent)
-    {
-        MusicComponent->Stop();
-        MusicComponent = nullptr;
-    }
+	if (!ActiveMusicComponent || !InactiveMusicComponent) return;
 
-    MusicComponent = UGameplayStatics::SpawnSound2D(
-        this,
-        Music,
-        1.0f,   // Volume
-        1.0f,   // Pitch
-        0.0f,   // Start time
-        nullptr,
-        true,   // Persist Across Level Transition
-        false   // Auto Destroy
-    );
+	FadeDuration = FMath::Max(0.0f, FadeDuration);
+
+	if (ActiveMusicComponent->IsPlaying() && ActiveMusicComponent->GetSound() == Music) return;
+
+	InactiveMusicComponent->Stop();
+	InactiveMusicComponent->SetSound(Music);
+
+	if (ActiveMusicComponent->IsPlaying()) ActiveMusicComponent->FadeOut(FadeDuration, 0.0f, EAudioFaderCurve::Linear);
+	InactiveMusicComponent->FadeIn(FadeDuration, MusicVolume, 0.0f, EAudioFaderCurve::Linear);
+
+	Swap(ActiveMusicComponent, InactiveMusicComponent);
 }
 
-void UKioskState::StopMusic()
+void UKioskState::StopMusic(float FadeDuration)
 {
-    if (MusicComponent)
-    {
-        MusicComponent->Stop();
-        MusicComponent = nullptr;
-    }
+	if (!ActiveMusicComponent) return;
+
+	FadeDuration = FMath::Max(0.0f, FadeDuration);
+	if (ActiveMusicComponent->IsPlaying())
+	{
+		if (FadeDuration > 0.0f) ActiveMusicComponent->FadeOut(FadeDuration, 0.0f, EAudioFaderCurve::Linear);
+		else ActiveMusicComponent->Stop();
+	}
 }
 
 void UKioskState::SetMusicVolume(float Volume)
 {
-    if (MusicComponent)
-    {
-        MusicComponent->SetVolumeMultiplier(
-            FMath::Clamp(Volume, 0.0f, 1.0f)
-        );
-    }
+	MusicVolume = FMath::Clamp(Volume, 0.0f, 1.0f);
+
+	if (MusicComponentA) MusicComponentA->SetVolumeMultiplier(MusicVolume);
+	if (MusicComponentB) MusicComponentB->SetVolumeMultiplier(MusicVolume);
 }
 
 void UKioskState::AddFlag(FGameplayTag Flag)
@@ -78,7 +121,7 @@ bool UKioskState::HasFlag(FGameplayTag Flag)
 
 void UKioskState::RemoveFlag(FGameplayTag Flag)
 {
-	if (Flags.Contains(Flag)) Flags.Remove(Flag);
+	Flags.Remove(Flag);
 }
 
 void UKioskState::AddItem(FGameplayTag ItemTag)
@@ -88,11 +131,10 @@ void UKioskState::AddItem(FGameplayTag ItemTag)
 
 bool UKioskState::HasItem(FGameplayTag ItemTag)
 {
-	if (Items.Contains(ItemTag)) return true;
-	return false;
+	return Items.Contains(ItemTag);
 }
 
 void UKioskState::RemoveItem(FGameplayTag ItemTag)
 {
-	if (HasItem(ItemTag)) Items.Remove(ItemTag);
+	Items.Remove(ItemTag);
 }

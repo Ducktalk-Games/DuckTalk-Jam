@@ -8,9 +8,6 @@
 #include "Engine/GameInstance.h"
 #include "KioskState.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class DUCKTALKJAM_API UKioskState : public UGameInstance
 {
@@ -21,26 +18,35 @@ public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
 
+#pragma region Audio
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
 	TObjectPtr<USoundBase> MenuMusic;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
 	TObjectPtr<USoundBase> GameplayMusic;
 
-	UFUNCTION(BlueprintCallable, Category = "Audio")
-	void PlayMusic(USoundBase* Music);
+	UPROPERTY(BlueprintReadOnly, Category = "Audio")
+	float MusicVolume = 1.0f;
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
-	void StopMusic();
+	void PlayMusic(USoundBase* Music, float FadeDuration = 2.0f);
+
+	UFUNCTION(BlueprintCallable, Category = "Audio")
+	void StopMusic(float FadeDuration = 2.0f);
 
 	UFUNCTION(BlueprintCallable, Category = "Audio")
 	void SetMusicVolume(float Volume);
+
+#pragma endregion Audio
+
+#pragma region Progress
 
 	UPROPERTY(BlueprintReadWrite, Category = "Progress")
 	int32 Day = 1;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Progress")
-	float Coins = 0;
+	float Coins = 0.0f;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Items")
 	TArray<FGameplayTag> Items;
@@ -50,6 +56,8 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, Category = "Progress")
 	TArray<FGameplayTag> Flags;
+
+#pragma endregion Progress
 
 #pragma region Flags
 
@@ -75,7 +83,17 @@ public:
 
 private:
 
-	UPROPERTY()
-	TObjectPtr<UAudioComponent> MusicComponent;
+	void InitializeMusicComponents();
 
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> MusicComponentA;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> MusicComponentB;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> ActiveMusicComponent;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> InactiveMusicComponent;
 };
