@@ -5,9 +5,9 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-07 19:03:32",
-        "timestamp": 1788804212,
-        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ShopPosters.blend",
+        "date_time_str": "2026-09-15 23:02:18",
+        "timestamp": 1789509738,
+        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\BobbleHead.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
@@ -16,47 +16,53 @@
     "assets": [
         {
             "scene_unit_scale": 1.0,
-            "asset_name": "PRP_ShopPoster_02",
-            "asset_type": "StaticMesh",
-            "asset_import_name": "SM_PRP_ShopPoster_02",
+            "asset_name": "BobbleHead",
+            "asset_type": "SkeletalMesh",
+            "asset_import_name": "SKM_BobbleHead",
             "asset_import_path": "Game\\ImportedBlenderAssets",
             "files": [
                 {
                     "type": "FBX",
                     "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_02.fbx"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\SkeletalMesh\\BobbleHead\\SKM_BobbleHead.fbx"
                 },
                 {
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_02_additional_data.json"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\SkeletalMesh\\BobbleHead\\SKM_BobbleHead_additional_data.json"
                 }
             ],
-            "auto_generate_collision": true,
-            "collision_trace_flag": "CTF_UseDefault",
+            "target_skeleton_search_ref": "/Script/Engine.Skeleton'/Game/ImportedBlenderAssets/SK_BobbleHead_Skeleton.SK_BobbleHead_Skeleton'",
+            "target_skeletal_mesh_search_ref": "/Script/Engine.SkeletalMesh'/Game/ImportedBlenderAssets/SKM_BobbleHead.SKM_BobbleHead'",
+            "target_skeleton_import_ref": "/Script/Engine.Skeleton'/Game/ImportedBlenderAssets/SK_BobbleHead_Skeleton.SK_BobbleHead_Skeleton'",
+            "create_physics_asset": true,
+            "enable_skeletal_mesh_per_poly_collision": false,
             "import_as_lod_mesh": false
         },
         {
             "scene_unit_scale": 1.0,
-            "asset_name": "PRP_ShopPoster_01",
-            "asset_type": "StaticMesh",
-            "asset_import_name": "SM_PRP_ShopPoster_01",
-            "asset_import_path": "Game\\ImportedBlenderAssets",
+            "asset_name": "BobbleHead_ArmatureAction",
+            "asset_type": "Action",
+            "asset_import_name": "Anim_ArmatureAction",
+            "asset_import_path": "Game\\ImportedBlenderAssets\\Anim",
             "files": [
                 {
                     "type": "FBX",
                     "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_01.fbx"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\SkeletalAnimation\\BobbleHead\\Anim\\Anim_ArmatureAction.fbx"
                 },
                 {
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_ShopPoster_01_additional_data.json"
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\SkeletalAnimation\\BobbleHead\\Anim\\Anim_ArmatureAction_additional_data.json"
                 }
             ],
-            "auto_generate_collision": true,
-            "collision_trace_flag": "CTF_UseDefault",
-            "import_as_lod_mesh": false
+            "target_skeleton_search_ref": "/Script/Engine.Skeleton'/Game/ImportedBlenderAssets/SK_BobbleHead_Skeleton.SK_BobbleHead_Skeleton'",
+            "target_skeletal_mesh_search_ref": "/Script/Engine.SkeletalMesh'/Game/ImportedBlenderAssets/SKM_BobbleHead.SKM_BobbleHead'",
+            "target_skeleton_import_ref": "/Script/Engine.Skeleton'/Game/ImportedBlenderAssets/SK_BobbleHead_Skeleton.SK_BobbleHead_Skeleton'",
+            "animation_start_frame": 0,
+            "animation_end_frame": 90,
+            "do_not_import_curve_with_zero": true
         }
     ]
 }
