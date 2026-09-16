@@ -217,7 +217,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
 
-	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) return;
+	if (IsGamePhase(EKioskPhase::Shopping) || (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup))) return;
 	if (!KioskState) return;
 	if (PossibleEvents.IsEmpty()) return;
 	if (b_EventHappening) return;
