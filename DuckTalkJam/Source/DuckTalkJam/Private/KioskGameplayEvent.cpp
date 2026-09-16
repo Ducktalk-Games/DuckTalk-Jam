@@ -20,3 +20,10 @@ void AKioskGameplayEvent::CompleteEvent()
 {
 	OnCompleted.Broadcast(this);
 }
+
+void AKioskGameplayEvent::DisableEvent()
+{
+	SetActorTickEnabled(false);
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+}

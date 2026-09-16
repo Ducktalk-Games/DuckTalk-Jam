@@ -35,6 +35,9 @@ public:
 
 	FOnKioskGameplayEventCompleted OnCompleted;
 
+	UFUNCTION(BlueprintCallable, Category = "Gameplay Event")
+	void DisableEvent();
+
 protected:
 	virtual void BeginPlay() override;
 };
