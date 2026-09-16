@@ -20,6 +20,7 @@ void AKioskGameModeBase::BeginPlay()
 	KioskState = GetGameInstance<UKioskState>();
 	Super::BeginPlay();
 	SetKioskPhase(EKioskPhase::Setup);
+	OrchestrateEvent();
 }
 
 void AKioskGameModeBase::StartRound()
@@ -214,20 +215,72 @@ void AKioskGameModeBase::OrchestrateRules()
 
 void AKioskGameModeBase::OrchestrateEvent()
 {
-	if (!IsGamePhase(EKioskPhase::Playing) || !IsGamePhase(EKioskPhase::Setup)) return;
-	if (!KioskState) return;
-	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
+	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
+
+	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup))
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEvent aborted: Game is not in a valid phase."));
+		return;
+	}
+
+	if (!KioskState)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEvent aborted: KioskState is null."));
+		return;
+	}
+
+	if (PossibleEvents.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEvent aborted: PossibleEvents is empty."));
+		return;
+	}
+
+	if (b_EventHappening)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEvent aborted: An event is already happening."));
+		return;
+	}
 
 	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1);
 	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex];
 
-	if (!EventClass) return;
+	UE_LOG(LogTemp, Warning,
+		TEXT("OrchestrateEvent selected event index %d of %d."),
+		RandomIndex,
+		PossibleEvents.Num());
+
+	if (!EventClass)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("OrchestrateEvent aborted: EventClass at index %d is null."),
+			RandomIndex);
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning,
+		TEXT("Attempting to spawn gameplay event: %s"),
+		*EventClass->GetName());
 
 	AKioskGameplayEvent* Event = GetWorld()->SpawnActor<AKioskGameplayEvent>(
 		EventClass,
 		FVector::ZeroVector,
 		FRotator::ZeroRotator);
-	if (!Event) return;
+
+	if (!Event)
+	{
+		UE_LOG(LogTemp, Error,
+			TEXT("Failed to spawn gameplay event: %s"),
+			*EventClass->GetName());
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning,
+		TEXT("Spawned gameplay event: %s"),
+		*GetNameSafe(Event));
 
 	Event->OnCompleted.AddUObject(
 		this,
@@ -236,6 +289,11 @@ void AKioskGameModeBase::OrchestrateEvent()
 
 	b_EventHappening = true;
 	ActiveEvents.Add(Event);
+
+	UE_LOG(LogTemp, Warning,
+		TEXT("Starting gameplay event: %s. ActiveEvents: %d"),
+		*GetNameSafe(Event),
+		ActiveEvents.Num());
 
 	Event->StartEvent(this);
 }
