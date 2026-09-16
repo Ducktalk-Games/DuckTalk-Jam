@@ -214,7 +214,7 @@ void AKioskGameModeBase::OrchestrateRules()
 
 void AKioskGameModeBase::OrchestrateEvent()
 {
-	if (!IsGamePhase(EKioskPhase::Playing)) return;
+	if (!IsGamePhase(EKioskPhase::Playing) || !IsGamePhase(EKioskPhase::Setup)) return;
 	if (!KioskState) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
