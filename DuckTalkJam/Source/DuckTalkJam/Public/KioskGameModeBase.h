@@ -252,6 +252,16 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
+	UPROPERTY(EditDefaultsOnly)
+	int32 BaseEventChance = 8;
+
+	UPROPERTY(EditDefaultsOnly)
+	int32 MinimumEventChance = 3;
+
+	int32 CurrentEventChance = BaseEventChance;
+
+	FTimerHandle TimerBetweenEvents;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool b_EventHappening = false;
 

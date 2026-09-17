@@ -222,6 +222,26 @@ void AKioskGameModeBase::OrchestrateEvent()
 	if (PossibleEvents.IsEmpty()) return;
 	if (b_EventHappening) return;
 
+	const bool bShouldTriggerEvent = FMath::RandRange(1, CurrentEventChance) == 1;
+	if (!bShouldTriggerEvent)
+	{
+		CurrentEventChance = FMath::Max(MinimumEventChance, CurrentEventChance - 1);
+
+		const float RetryDelay = FMath::FRandRange(15.0f, 20.0f);
+		UE_LOG(LogTemp, Warning, TEXT("Event roll failed. Next chance: 1 in %d. Retrying in %.2f seconds."), CurrentEventChance, RetryDelay);
+
+		GetWorldTimerManager().SetTimer(
+			TimerBetweenEvents,
+			this,
+			&AKioskGameModeBase::OrchestrateEvent,
+			RetryDelay,
+			false
+		);
+		return;
+	}
+
+	CurrentEventChance = BaseEventChance;
+
 	const int32 RandomIndex = FMath::RandRange(0, PossibleEvents.Num() - 1);
 	TSubclassOf<AKioskGameplayEvent> EventClass = PossibleEvents[RandomIndex];
 	if (!EventClass) return;
@@ -231,12 +251,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 		FVector::ZeroVector,
 		FRotator::ZeroRotator);
 
-	if (!Event)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn gameplay event: %s"), *EventClass->GetName());
-		return;
-	}
-
+	if (!Event) return;
 	UE_LOG(LogTemp, Warning, TEXT("Spawned gameplay event: %s"), *GetNameSafe(Event));
 	Event->OnCompleted.AddUObject(this, &AKioskGameModeBase::OnGameplayEventCompleted);
 
@@ -296,12 +311,14 @@ void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
 
 	Event->DisableEvent();
 
-	const float GracePeriod = FMath::FRandRange(15.0f, 20.0f);
-	UE_LOG(LogKiosk, Warning, TEXT("Event completed. Next event will be queued in %.2f seconds."), GracePeriod);
+	// Reset event odds after a successful event
+	CurrentEventChance = BaseEventChance;
 
-	FTimerHandle TimerHandle;
+	const float GracePeriod = FMath::FRandRange(15.0f, 20.0f);
+	UE_LOG(LogKiosk, Warning, TEXT("Event completed. Next event roll in %.2f seconds."), GracePeriod);
+
 	GetWorldTimerManager().SetTimer(
-		TimerHandle,
+		TimerBetweenEvents,
 		this,
 		&AKioskGameModeBase::OrchestrateEvent,
 		GracePeriod,
