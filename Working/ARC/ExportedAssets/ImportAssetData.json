@@ -5,8 +5,8 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-03 00:24:41",
-        "timestamp": 1788391481,
+        "date_time_str": "2026-09-17 18:08:09",
+        "timestamp": 1789664889,
         "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\ARC\\SM_ARC_Shop.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
@@ -52,6 +52,28 @@
                     "type": "JSON",
                     "content_type": "ADDITIONAL_DATA",
                     "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\ARC\\ExportedAssets\\StaticMesh\\SM_ARC_Shop_Panel_additional_data.json"
+                }
+            ],
+            "auto_generate_collision": true,
+            "collision_trace_flag": "CTF_UseDefault",
+            "import_as_lod_mesh": false
+        },
+        {
+            "scene_unit_scale": 0.01,
+            "asset_name": "PRP_Button",
+            "asset_type": "StaticMesh",
+            "asset_import_name": "SM_PRP_Button",
+            "asset_import_path": "Game\\ImportedBlenderAssets",
+            "files": [
+                {
+                    "type": "FBX",
+                    "content_type": "",
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\ARC\\ExportedAssets\\StaticMesh\\SM_PRP_Button.fbx"
+                },
+                {
+                    "type": "JSON",
+                    "content_type": "ADDITIONAL_DATA",
+                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\ARC\\ExportedAssets\\StaticMesh\\SM_PRP_Button_additional_data.json"
                 }
             ],
             "auto_generate_collision": true,
