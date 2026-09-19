@@ -254,7 +254,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 	{
 		CurrentEventChance = FMath::Max(MinimumEventChance, CurrentEventChance - 1);
 
-		const float RetryDelay = FMath::FRandRange(5.0f, 15.0f);
+		const float RetryDelay = FMath::FRandRange(10.0f, 20.0f);
 		UE_LOG(LogTemp, Warning, TEXT("Event roll failed. Next chance: 1 in %d. Retrying in %.2f seconds."), CurrentEventChance, RetryDelay);
 
 		GetWorldTimerManager().SetTimer(
@@ -375,7 +375,6 @@ void AKioskGameModeBase::ProcessCharacter(AKioskCharacter* Character)
 			break;
 	}
 
-
 	EncounterCharactersLetIn.Add(CurrentEncounter);
 
 	CurrentEncounter = nullptr;
@@ -438,7 +437,7 @@ void AKioskGameModeBase::TryAdvanceEncounter()
 		TimerBetweenEncounters,
 		this,
 		&AKioskGameModeBase::AdvanceEncounter,
-		5.0f,
+		10.0f,
 		false
 	);
 }
