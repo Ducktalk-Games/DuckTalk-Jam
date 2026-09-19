@@ -256,7 +256,7 @@ public:
 	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
 	UPROPERTY(EditDefaultsOnly)
-	int32 BaseEventChance = 8;
+	int32 BaseEventChance = 6;
 
 	UPROPERTY(EditDefaultsOnly)
 	int32 MinimumEventChance = 3;

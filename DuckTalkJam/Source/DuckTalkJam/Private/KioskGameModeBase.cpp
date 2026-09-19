@@ -121,6 +121,7 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 			EndRound();
 			break;
 		case EKioskPhase::Shopping:
+			ClearDayExclusiveEvents();
 			break;
 	}
 
@@ -245,7 +246,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
 
-	if (!IsGamePhase(EKioskPhase::Playing) || !KioskState) return;
+	if ((!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) || !KioskState) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
 	const bool bShouldTriggerEvent = FMath::RandRange(1, CurrentEventChance) == 1;
@@ -253,7 +254,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 	{
 		CurrentEventChance = FMath::Max(MinimumEventChance, CurrentEventChance - 1);
 
-		const float RetryDelay = FMath::FRandRange(15.0f, 20.0f);
+		const float RetryDelay = FMath::FRandRange(5.0f, 15.0f);
 		UE_LOG(LogTemp, Warning, TEXT("Event roll failed. Next chance: 1 in %d. Retrying in %.2f seconds."), CurrentEventChance, RetryDelay);
 
 		GetWorldTimerManager().SetTimer(
