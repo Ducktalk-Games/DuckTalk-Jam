@@ -140,6 +140,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndGame();
 
+	UFUNCTION(BlueprintCallable)
+	void RestartGame();
+
 	void PrepareForNextRound();
 
 #pragma endregion GameplayEvents
@@ -152,10 +155,10 @@ public:
 	TMap<int32, FDayEncounterConfig> EncountersPerDay;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DayWage = 50.0f;
+	float DayWage = 40.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MistakePenalty = 20.0f;
+	float MistakePenalty = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, float> PayDocks;

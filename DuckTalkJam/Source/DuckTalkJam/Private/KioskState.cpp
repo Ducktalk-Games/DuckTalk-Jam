@@ -68,6 +68,15 @@ void UKioskState::Shutdown()
 	Super::Shutdown();
 }
 
+void UKioskState::Reset()
+{
+	Day = 0;
+	Coins = 0;
+	Items.Empty();
+	b_ItemsInitialized = false;
+	Flags.Empty();
+}
+
 void UKioskState::PlayMusic(USoundBase* Music, float FadeDuration)
 {
 	if (!Music) return;

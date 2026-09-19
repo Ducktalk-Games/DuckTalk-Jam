@@ -55,6 +55,34 @@ void AKioskGameModeBase::EndGame()
 	SetKioskPhase(EKioskPhase::Credits);
 }
 
+void AKioskGameModeBase::RestartGame()
+{
+	if (!KioskState) return;
+
+	KioskState->Reset();
+
+	PayDocks.Empty();
+	CorrectlyProcessed = 0;
+	Mistakes = 0;
+	b_EncounterInProgress = false;
+	b_EncounterResolved = false;
+	b_IsRepremanded = false;
+	b_DialogueFinished = false;
+
+	CurrentEncounter = nullptr;
+	CurrentEncounterCharacter = nullptr;
+	CurrentEncounterIndex = 0;
+	EncounterCharactersLetIn.Empty();
+	CurrentCharacterEntry = FKioskCharacterEntry();
+
+	AppliedRules.Empty();
+	ActiveEvents.Empty();
+	HappenedEvents.Empty();
+	ActiveDayExclusiveEvents.Empty();
+
+	CurrentPhase = EKioskPhase::None;
+}
+
 void AKioskGameModeBase::PrepareForNextRound()
 {
 	CurrentEncounterIndex = 0;
@@ -217,10 +245,8 @@ void AKioskGameModeBase::OrchestrateEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
 
-	if (IsGamePhase(EKioskPhase::Shopping) || (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup))) return;
-	if (!KioskState) return;
-	if (PossibleEvents.IsEmpty()) return;
-	if (b_EventHappening) return;
+	if (!IsGamePhase(EKioskPhase::Playing) || !KioskState) return;
+	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
 	const bool bShouldTriggerEvent = FMath::RandRange(1, CurrentEventChance) == 1;
 	if (!bShouldTriggerEvent)
