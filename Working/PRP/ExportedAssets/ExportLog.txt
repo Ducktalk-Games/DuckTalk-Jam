@@ -1,13 +1,7 @@
 This file was generated with the addons Blender for UnrealEngine : https://github.com/xavier150/Blender-For-UnrealEngine-Addons
 
-0 Skeletal Mesh(s) | 3 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
+0 Skeletal Mesh(s) | 1 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
 
-ASSET [Static Mesh] 'Musicbox' EXPORTED IN 7 ms
- -> Package [Static Mesh] 'Musicbox' SUCCESS (6 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_Musicbox.fbx
-ASSET [Static Mesh] 'Dancer' EXPORTED IN 13 ms
- -> Package [Static Mesh] 'Dancer' SUCCESS (13 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_Dancer.fbx
-ASSET [Static Mesh] 'MusicBoxLid' EXPORTED IN 7 ms
- -> Package [Static Mesh] 'MusicBoxLid' SUCCESS (6 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_MusicBoxLid.fbx
+ASSET [Static Mesh] 'PRP_Brooch' EXPORTED IN 33 ms
+ -> Package [Static Mesh] 'PRP_Brooch' SUCCESS (31 ms)
+    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_PRP_Brooch.fbx

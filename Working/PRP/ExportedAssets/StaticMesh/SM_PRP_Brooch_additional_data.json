@@ -12,29 +12,22 @@
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
     },
-    "unreal_import_location": "Game\\ImportedBlenderAssets",
-    "assets": [
-        {
-            "scene_unit_scale": 1.0,
-            "asset_name": "PRP_Brooch",
-            "asset_type": "StaticMesh",
-            "asset_import_name": "SM_PRP_Brooch",
-            "asset_import_path": "Game\\ImportedBlenderAssets",
-            "files": [
-                {
-                    "type": "FBX",
-                    "content_type": "",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_Brooch.fbx"
-                },
-                {
-                    "type": "JSON",
-                    "content_type": "ADDITIONAL_DATA",
-                    "file_path": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\ExportedAssets\\StaticMesh\\SM_PRP_Brooch_additional_data.json"
-                }
-            ],
-            "auto_generate_collision": true,
-            "collision_trace_flag": "CTF_UseDefault",
-            "import_as_lod_mesh": false
-        }
-    ]
+    "DefaultSettings": {},
+    "Sockets": [],
+    "static_mesh_lod_group": null,
+    "level_of_details": {},
+    "vertex_color_import_option": "IGNORE",
+    "vertex_override_color": [
+        1.0,
+        1.0,
+        1.0
+    ],
+    "import_materials": true,
+    "import_textures": false,
+    "flip_normal_map_green_channel": false,
+    "reorder_material_to_fbx_order": true,
+    "material_search_location": "Local",
+    "generate_light_map_uvs": true,
+    "use_custom_light_map_resolution": false,
+    "light_map_resolution": -1
 }

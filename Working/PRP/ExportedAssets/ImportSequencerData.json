@@ -5,9 +5,9 @@
         "3/3": "The script must be used in Unreal Engine Editor with Python plugins : https://docs.unrealengine.com/en-US/Engine/Editor/ScriptingAndAutomation/Python"
     },
     "info": {
-        "date_time_str": "2026-09-19 14:58:01",
-        "timestamp": 1789826281,
-        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\SM_PRP_Trophy.blend",
+        "date_time_str": "2026-09-19 18:23:52",
+        "timestamp": 1789838632,
+        "blender_file": "F:\\Unreal Projects\\DuckTalk-Jam\\Working\\PRP\\Brooch.blend",
         "addon_version": "Version 4.4.8",
         "addon_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter",
         "import_module_path": "C:\\Users\\Thomas Paul\\AppData\\Roaming\\Blender Foundation\\Blender\\5.2\\extensions\\user_default\\unrealengine_assets_exporter\\bfu_import_module"
