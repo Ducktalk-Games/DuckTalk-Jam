@@ -18,6 +18,8 @@ public:
 	virtual void Init() override;
 	virtual void Shutdown() override;
 
+	void Reset();
+
 #pragma region Audio
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Audio")
