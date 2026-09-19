@@ -1,10 +1,13 @@
 This file was generated with the addons Blender for UnrealEngine : https://github.com/xavier150/Blender-For-UnrealEngine-Addons
 
-1 Skeletal Mesh(s) | 0 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 1 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
+0 Skeletal Mesh(s) | 3 Static Mesh(s) | 0 Collection Static Mesh(s) | 0 Camera(s) | 0 Groom Simulation(s) | 0 Spline(s) | 0 Action Animation(s) | 0 Pose Animation(s) | 0 Non Linear Animation(s) | 0 Alembic Animation(s)
 
-ASSET [Skeletal Mesh] 'BobbleHead' EXPORTED IN 29 ms
- -> Package [Skeletal Mesh] 'BobbleHead' SUCCESS (25 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\SkeletalMesh\BobbleHead\SKM_BobbleHead.fbx
-ASSET [Action Animation] 'BobbleHead_ArmatureAction' EXPORTED IN 31 ms
- -> Package [Animation (Action Animation)] 'ArmatureAction' SUCCESS (30 ms)
-    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\SkeletalAnimation\BobbleHead\Anim\Anim_ArmatureAction.fbx
+ASSET [Static Mesh] 'Musicbox' EXPORTED IN 7 ms
+ -> Package [Static Mesh] 'Musicbox' SUCCESS (6 ms)
+    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_Musicbox.fbx
+ASSET [Static Mesh] 'Dancer' EXPORTED IN 13 ms
+ -> Package [Static Mesh] 'Dancer' SUCCESS (13 ms)
+    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_Dancer.fbx
+ASSET [Static Mesh] 'MusicBoxLid' EXPORTED IN 7 ms
+ -> Package [Static Mesh] 'MusicBoxLid' SUCCESS (6 ms)
+    F:\Unreal Projects\DuckTalk-Jam\Working\PRP\ExportedAssets\StaticMesh\SM_MusicBoxLid.fbx
