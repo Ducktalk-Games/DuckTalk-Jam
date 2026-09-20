@@ -100,6 +100,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OrchestrateDayExclusiveEvents();
 
+	UFUNCTION(BlueprintCallable)
+	void ClearActiveEvents();
+
+	UFUNCTION(BlueprintCallable)
 	void ClearDayExclusiveEvents();
 
 	UFUNCTION(BlueprintCallable)

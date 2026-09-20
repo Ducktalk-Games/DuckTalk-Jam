@@ -83,11 +83,14 @@ void AKioskGameModeBase::RestartGame()
 		Event->OnCompleted.RemoveAll(this);
 		Event->Destroy();
 	}
+
 	ActiveEvents.Empty();
+
+	ClearActiveEvents();
 	ClearDayExclusiveEvents();
+
 	b_EventHappening = false;
 	CurrentEventChance = BaseEventChance;
-
 	CurrentPhase = EKioskPhase::None;
 }
 
@@ -109,28 +112,20 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 {
 	if (CurrentPhase == NewPhase) return;
 
+	ClearActiveEvents();
+	ClearDayExclusiveEvents();
+
 	CurrentPhase = NewPhase;
 
 	switch (CurrentPhase)
 	{
-		case EKioskPhase::None:
-			ClearDayExclusiveEvents();
-			break;
-		case EKioskPhase::Setup:
-			ClearDayExclusiveEvents();
-			OrchestrateDayExclusiveEvents();
-			PrepareForNextRound();
-			break;
-		case EKioskPhase::Playing:
-			OrchestrateRules();
-			StartRound();
-			break;
-		case EKioskPhase::EndOfDay:
-			EndRound();
-			break;
-		case EKioskPhase::Shopping:
-			ClearDayExclusiveEvents();
-			break;
+		case EKioskPhase::None: break;
+		case EKioskPhase::Setup: OrchestrateDayExclusiveEvents(); PrepareForNextRound(); break;
+		case EKioskPhase::Playing: OrchestrateRules(); StartRound(); break;
+		case EKioskPhase::EndOfDay: EndRound(); break;
+		case EKioskPhase::Shopping: break;
+		case EKioskPhase::Credits: break;
+		default: break;
 	}
 
 	OnPhaseChanged.Broadcast(NewPhase);
@@ -320,6 +315,25 @@ void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
 		UE_LOG(LogKiosk, Warning, TEXT("Starting day-exclusive event '%s' for Day %d."), *GetNameSafe(Event), KioskState->Day);
 		Event->StartEvent(this);
 	}
+}
+
+void AKioskGameModeBase::ClearActiveEvents()
+{
+	GetWorldTimerManager().ClearTimer(TimerBetweenEvents);
+
+	for (AKioskGameplayEvent* Event : ActiveEvents)
+	{
+		if (!IsValid(Event)) continue;
+		Event->OnCompleted.RemoveAll(this);
+		Event->Destroy();
+	}
+
+	ActiveEvents.Empty();
+
+	b_EventHappening = false;
+	CurrentEventChance = BaseEventChance;
+
+	UE_LOG(LogKiosk, Warning, TEXT("Cleared active gameplay events."));
 }
 
 void AKioskGameModeBase::ClearDayExclusiveEvents()
