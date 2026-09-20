@@ -70,7 +70,7 @@ void UKioskState::Shutdown()
 
 void UKioskState::Reset()
 {
-	Day = 0;
+	Day = 1;
 	Coins = 0;
 	Items.Empty();
 	b_ItemsInitialized = false;

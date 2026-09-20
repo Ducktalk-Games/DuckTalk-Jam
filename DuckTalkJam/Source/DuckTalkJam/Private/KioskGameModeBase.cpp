@@ -112,19 +112,15 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 {
 	if (CurrentPhase == NewPhase) return;
 
-	ClearActiveEvents();
-	ClearDayExclusiveEvents();
-
 	CurrentPhase = NewPhase;
-
 	switch (CurrentPhase)
 	{
 		case EKioskPhase::None: break;
 		case EKioskPhase::Setup: OrchestrateDayExclusiveEvents(); PrepareForNextRound(); break;
 		case EKioskPhase::Playing: OrchestrateRules(); StartRound(); break;
 		case EKioskPhase::EndOfDay: EndRound(); break;
-		case EKioskPhase::Shopping: break;
-		case EKioskPhase::Credits: break;
+		case EKioskPhase::Shopping: ClearActiveEvents(); ClearDayExclusiveEvents(); break;
+		case EKioskPhase::Credits: ClearActiveEvents(); ClearDayExclusiveEvents(); break;
 		default: break;
 	}
 
@@ -249,7 +245,8 @@ void AKioskGameModeBase::OrchestrateEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
 
-	if ((!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) || !KioskState) return;
+	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) return;
+	if (!KioskState) return;
 	if (PossibleEvents.IsEmpty() || b_EventHappening) return;
 
 	const bool bShouldTriggerEvent = FMath::RandRange(1, CurrentEventChance) == 1;
@@ -294,7 +291,7 @@ void AKioskGameModeBase::OrchestrateEvent()
 
 void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
 {
-	if (!IsGamePhase(EKioskPhase::Setup)) return;
+	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) return;
 	if (!KioskState) return;
 
 	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
@@ -450,10 +447,21 @@ void AKioskGameModeBase::HandleEncounterExitFinished()
 void AKioskGameModeBase::TryAdvanceEncounter()
 {
 	if (!b_EncounterResolved || !b_DialogueFinished || b_IsRepremanded) return;
+	if (!KioskState) return;
 
 	b_EncounterResolved = false;
 	b_DialogueFinished = false;
 
+	const FDayEncounterConfig* DayConfig = EncountersPerDay.Find(KioskState->Day);
+
+	// No next encounter for this day -> finish immediately.
+	if (!DayConfig || !DayConfig->CharacterOrder.IsValidIndex(CurrentEncounterIndex))
+	{
+		SetKioskPhase(EKioskPhase::EndOfDay);
+		return;
+	}
+
+	// There is another encounter, so wait before starting it.
 	GetWorldTimerManager().SetTimer(
 		TimerBetweenEncounters,
 		this,
