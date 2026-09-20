@@ -76,9 +76,17 @@ void AKioskGameModeBase::RestartGame()
 	CurrentCharacterEntry = FKioskCharacterEntry();
 
 	AppliedRules.Empty();
+	GetWorldTimerManager().ClearTimer(TimerBetweenEvents);
+	for (AKioskGameplayEvent* Event : ActiveEvents)
+	{
+		if (!IsValid(Event)) continue;
+		Event->OnCompleted.RemoveAll(this);
+		Event->Destroy();
+	}
 	ActiveEvents.Empty();
-	HappenedEvents.Empty();
-	ActiveDayExclusiveEvents.Empty();
+	ClearDayExclusiveEvents();
+	b_EventHappening = false;
+	CurrentEventChance = BaseEventChance;
 
 	CurrentPhase = EKioskPhase::None;
 }
@@ -330,13 +338,12 @@ void AKioskGameModeBase::ClearDayExclusiveEvents()
 
 void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
 {
-	if (!IsValid(Event)) return;
+	if (!IsValid(Event) || ActiveEvents.Remove(Event) == 0) return;
 
-	ActiveEvents.Remove(Event);
-	HappenedEvents.Add(Event);
 	b_EventHappening = false;
 
-	Event->DisableEvent();
+	Event->OnCompleted.RemoveAll(this);
+	Event->Destroy();
 
 	// Reset event odds after a successful event
 	CurrentEventChance = BaseEventChance;

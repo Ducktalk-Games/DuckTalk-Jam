@@ -250,9 +250,6 @@ public:
 	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveEvents;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<AKioskGameplayEvent>> HappenedEvents;
-
-	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<AKioskGameplayEvent>> ActiveDayExclusiveEvents;
 
 	UPROPERTY(EditDefaultsOnly)

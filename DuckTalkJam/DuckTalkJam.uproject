@@ -72,7 +72,7 @@
 		},
 		{
 			"Name": "ACLPlugin",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "AnimatorKit",
@@ -100,7 +100,7 @@
 		},
 		{
 			"Name": "AssetManagerEditor",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "Bridge",
@@ -344,11 +344,11 @@
 		},
 		{
 			"Name": "PluginUtils",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "PluginBrowser",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "SkeletalMeshModelingTools",
@@ -384,7 +384,7 @@
 		},
 		{
 			"Name": "EngineAssetDefinitions",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "ExampleDeviceProfileSelector",
@@ -572,7 +572,7 @@
 		},
 		{
 			"Name": "ControlRig",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "GameplayCameras",
@@ -584,7 +584,7 @@
 		},
 		{
 			"Name": "LevelSequenceEditor",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "SequenceValidator",
@@ -596,7 +596,7 @@
 		},
 		{
 			"Name": "Niagara",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "GeometryCache",
@@ -604,7 +604,7 @@
 		},
 		{
 			"Name": "RigVM",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "RenderGraphInsights",
@@ -652,7 +652,7 @@
 		},
 		{
 			"Name": "TweeningUtils",
-			"Enabled": false
+			"Enabled": true
 		},
 		{
 			"Name": "VariantManagerContent",
