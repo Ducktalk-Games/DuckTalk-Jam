@@ -115,7 +115,7 @@ void AKioskGameModeBase::SetKioskPhase(EKioskPhase NewPhase)
 	CurrentPhase = NewPhase;
 	switch (CurrentPhase)
 	{
-		case EKioskPhase::None: break;
+		case EKioskPhase::None: ClearActiveEvents(); ClearDayExclusiveEvents(); break;
 		case EKioskPhase::Setup: OrchestrateDayExclusiveEvents(); PrepareForNextRound(); break;
 		case EKioskPhase::Playing: OrchestrateRules(); StartRound(); break;
 		case EKioskPhase::EndOfDay: EndRound(); break;
