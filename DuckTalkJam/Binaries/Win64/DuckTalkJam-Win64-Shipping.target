@@ -3245,6 +3245,10 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Animation/ACLPlugin/ACLPlugin.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Animation/AnimationData/AnimationData.uplugin",
 			"Type": "UFS"
 		},
@@ -3277,7 +3281,15 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Developer/PluginUtils/PluginUtils.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Developer/UObjectPlugin/UObjectPlugin.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Editor/AssetManagerEditor/AssetManagerEditor.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3302,6 +3314,10 @@
 		},
 		{
 			"Path": "$(EngineDir)/Plugins/Editor/GeometryMode/GeometryMode.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Editor/PluginBrowser/PluginBrowser.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3486,7 +3502,9 @@
 		}
 	],
 	"BuildPlugins": [
+		"ACLPlugin",
 		"AnimationData",
+		"AssetManagerEditor",
 		"AssetTags",
 		"AudioCapture",
 		"BaseMaterial",
@@ -3529,6 +3547,8 @@
 		"NullSourceCodeAccess",
 		"PlanarCut",
 		"PlatformCrypto",
+		"PluginBrowser",
+		"PluginUtils",
 		"ProceduralMeshComponent",
 		"ProjectLauncher",
 		"PropertyAccessEditor",
