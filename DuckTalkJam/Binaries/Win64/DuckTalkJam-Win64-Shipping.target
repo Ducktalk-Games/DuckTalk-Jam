@@ -61,6 +61,10 @@
 			"Type": "NonUFS"
 		},
 		{
+			"Path": "$(EngineDir)/Binaries/ThirdParty/Steamworks/Steamv164/Win64/steam_api64.dll",
+			"Type": "NonUFS"
+		},
+		{
 			"Path": "$(EngineDir)/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
 			"Type": "NonUFS"
 		},
@@ -3417,6 +3421,26 @@
 			"Type": "UFS"
 		},
 		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineBase/OnlineBase.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineServices/OnlineServices.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemSteam/OnlineSubsystemSteam.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystemUtils/OnlineSubsystemUtils.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Online/OnlineSubsystem/OnlineSubsystem.uplugin",
+			"Type": "UFS"
+		},
+		{
 			"Path": "$(EngineDir)/Plugins/Runtime/AssetTags/AssetTags.uplugin",
 			"Type": "UFS"
 		},
@@ -3458,6 +3482,10 @@
 		},
 		{
 			"Path": "$(EngineDir)/Plugins/Runtime/SoundFields/SoundFields.uplugin",
+			"Type": "UFS"
+		},
+		{
+			"Path": "$(EngineDir)/Plugins/Runtime/Steam/SteamShared/SteamShared.uplugin",
 			"Type": "UFS"
 		},
 		{
@@ -3545,6 +3573,11 @@
 		"NiagaraInsights",
 		"NiagaraPreviewContent",
 		"NullSourceCodeAccess",
+		"OnlineBase",
+		"OnlineServices",
+		"OnlineSubsystem",
+		"OnlineSubsystemSteam",
+		"OnlineSubsystemUtils",
 		"PlanarCut",
 		"PlatformCrypto",
 		"PluginBrowser",
@@ -3561,6 +3594,7 @@
 		"SequencerScripting",
 		"SkeletalReduction",
 		"SoundFields",
+		"SteamShared",
 		"Takes",
 		"ToolPresets",
 		"TweeningUtils",

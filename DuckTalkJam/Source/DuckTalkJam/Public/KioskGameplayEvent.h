@@ -30,6 +30,11 @@ public:
 
 	virtual void StartEvent_Implementation(AKioskGameModeBase* GameMode);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void CleanupSelf(AKioskGameModeBase* GameMode);
+
+	virtual void CleanupSelf_Implementation(AKioskGameModeBase* GameMode);
+
 	UFUNCTION(BlueprintCallable, Category = "Gameplay Event")
 	void CompleteEvent();
 

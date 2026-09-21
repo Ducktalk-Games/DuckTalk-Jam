@@ -16,6 +16,9 @@ void AKioskGameplayEvent::BeginPlay()
 void AKioskGameplayEvent::StartEvent_Implementation(AKioskGameModeBase* GameMode)
 {}
 
+void AKioskGameplayEvent::CleanupSelf_Implementation(AKioskGameModeBase * GameMode)
+{}
+
 void AKioskGameplayEvent::CompleteEvent()
 {
 	OnCompleted.Broadcast(this);
