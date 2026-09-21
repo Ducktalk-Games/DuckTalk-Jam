@@ -508,10 +508,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "OnlineSubsystem",
-			"Enabled": false
-		},
-		{
 			"Name": "OnlineSubsystemNull",
 			"Enabled": false
 		},
@@ -522,10 +518,6 @@
 				"IOS",
 				"TVOS"
 			]
-		},
-		{
-			"Name": "OnlineBase",
-			"Enabled": false
 		},
 		{
 			"Name": "OodleNetwork",
@@ -676,6 +668,10 @@
 		{
 			"Name": "XGEController",
 			"Enabled": false
+		},
+		{
+			"Name": "OnlineSubsystemSteam",
+			"Enabled": true
 		}
 	]
 }
