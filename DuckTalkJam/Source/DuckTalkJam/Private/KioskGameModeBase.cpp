@@ -19,7 +19,7 @@ void AKioskGameModeBase::BeginPlay()
 {
 	KioskState = GetGameInstance<UKioskState>();
 	Super::BeginPlay();
-	SetKioskPhase(EKioskPhase::Setup);
+	SetKioskPhase(EKioskPhase::None);
 
 	if (b_EnableRandomEvents)
 	{
