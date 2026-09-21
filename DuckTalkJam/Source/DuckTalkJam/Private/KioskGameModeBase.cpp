@@ -340,6 +340,7 @@ void AKioskGameModeBase::ClearDayExclusiveEvents()
 	for (AKioskGameplayEvent* Event : ActiveDayExclusiveEvents)
 	{
 		if (!IsValid(Event)) continue;
+		Event->CleanupSelf(this);
 		Event->Destroy();
 	}
 
