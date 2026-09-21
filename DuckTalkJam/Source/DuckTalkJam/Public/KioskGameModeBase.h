@@ -271,6 +271,15 @@ public:
 
 	void OnGameplayEventCompleted(AKioskGameplayEvent* Event);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EnableRandomEvents = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool b_EnableDayExclusiveEvents = true;
+
+	UFUNCTION(BlueprintCallable)
+	void SetEventsEnabled(bool b_Enabled);
+
 #pragma endregion Events
 
 protected:

@@ -20,7 +20,11 @@ void AKioskGameModeBase::BeginPlay()
 	KioskState = GetGameInstance<UKioskState>();
 	Super::BeginPlay();
 	SetKioskPhase(EKioskPhase::Setup);
-	OrchestrateEvent();
+
+	if (b_EnableRandomEvents)
+	{
+		OrchestrateEvent();
+	}
 }
 
 void AKioskGameModeBase::StartRound()
@@ -241,9 +245,27 @@ void AKioskGameModeBase::OrchestrateRules()
 	}
 }
 
+void AKioskGameModeBase::SetEventsEnabled(bool b_Enabled)
+{
+	b_EnableRandomEvents = b_Enabled;
+	b_EnableDayExclusiveEvents = b_Enabled;
+
+	if (!b_Enabled)
+	{
+		ClearActiveEvents();
+		ClearDayExclusiveEvents();
+	}
+}
+
 void AKioskGameModeBase::OrchestrateEvent()
 {
 	UE_LOG(LogTemp, Warning, TEXT("OrchestrateEvent called."));
+
+	if (!b_EnableRandomEvents)
+	{
+		GetWorldTimerManager().ClearTimer(TimerBetweenEvents);
+		return;
+	}
 
 	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) return;
 	if (!KioskState) return;
@@ -291,6 +313,8 @@ void AKioskGameModeBase::OrchestrateEvent()
 
 void AKioskGameModeBase::OrchestrateDayExclusiveEvents()
 {
+	if (!b_EnableDayExclusiveEvents) return;
+
 	if (!IsGamePhase(EKioskPhase::Playing) && !IsGamePhase(EKioskPhase::Setup)) return;
 	if (!KioskState) return;
 
@@ -359,6 +383,17 @@ void AKioskGameModeBase::OnGameplayEventCompleted(AKioskGameplayEvent* Event)
 
 	// Reset event odds after a successful event
 	CurrentEventChance = BaseEventChance;
+
+	if (!b_EnableRandomEvents)
+	{
+		GetWorldTimerManager().ClearTimer(TimerBetweenEvents);
+		return;
+	}
+
+	if (!IsGamePhase(EKioskPhase::Playing) || !IsGamePhase(EKioskPhase::Setup))
+	{
+		return;
+	}
 
 	const float GracePeriod = FMath::FRandRange(15.0f, 20.0f);
 	UE_LOG(LogKiosk, Warning, TEXT("Event completed. Next event roll in %.2f seconds."), GracePeriod);
